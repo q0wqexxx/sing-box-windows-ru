@@ -116,7 +116,7 @@ pub async fn download_latest_kernel(window: tauri::Window) -> Result<(), String>
     if path.exists() {
         if !path.is_dir() {
             error!("Путь sing-box существует, но не является каталогом");
-            return Err("Путь sing-box существует, но не является каталогом".toString());
+            return Err("Путь sing-box существует, но не является каталогом".to_string());
         }
     }
 
@@ -158,7 +158,7 @@ pub async fn download_latest_kernel(window: tauri::Window) -> Result<(), String>
         .as_str()
         .ok_or("Не удалось получить номер версии")?
         .trim_start_matches('v')
-        .toString();
+        .to_string();
 
     // Получение текущей платформы и архитектуры системы
     let platform = std::env::consts::OS;
