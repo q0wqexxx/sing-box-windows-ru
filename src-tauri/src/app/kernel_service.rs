@@ -121,7 +121,7 @@ pub async fn download_latest_kernel(window: tauri::Window) -> Result<(), String>
     }
 
     // Убедитесь, что каталог существует
-    if let Err(e) = std::.fs::create_dir_all(&path) {
+    if let Err(e) = std::fs::create_dir_all(&path) {
         error!("Не удалось создать каталог: {}", e);
         return Err(format!("Не удалось создать каталог: {}", e));
     }
