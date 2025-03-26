@@ -74,36 +74,36 @@
       <template #action>
         <div class="modal-footer">
           <n-space justify="end">
-            <n-button @click="showModeChangeModal = false">Отмена</н-button>
-            <н-button type="primary" :loading="isChangingMode" @click="confirmProxyModeChange">
+            <n-button @click="showModeChangeModal = false">Отмена</n-button>
+            <n-button type="primary" :loading="isChangingMode" @click="confirmProxyModeChange">
               Подтвердить переключение
-            </н-button>
-          </н-space>
+            </n-button>
+          </n-space>
         </div>
       </template>
-    </н-modal>
+    </n-modal>
 
     <!-- Карточка списка прокси -->
-    <н-spin :show="isLoading">
-      <н-card class="proxy-list-card" :bordered="false">
-        <н-tabs type="segment" animated class="proxy-tabs" v-model:value="activeTab">
+    <n-spin :show="isLoading">
+      <n-card class="proxy-list-card" :bordered="false">
+        <n-tabs type="segment" animated class="proxy-tabs" v-model:value="activeTab">
           <!-- Вкладка глобальных настроек -->
-          <н-tab-pane name="global" tab="Глобальные настройки">
+          <n-tab-pane name="global" tab="Глобальные настройки">
             <div v-if="globalGroup" class="proxy-group">
               <div class="proxy-group-info">
-                <н-space align="center" :size="12">
-                  <н-tag :bordered="false" type="success" size="medium" class="proxy-tag">
+                <n-space align="center" :size="12">
+                  <n-tag :bordered="false" type="success" size="medium" class="proxy-tag">
                     Текущий: {{ globalGroup.now }}
-                  </н-tag>
-                  <н-tag :bordered="false" type="info" size="medium" class="proxy-tag">
+                  </n-tag>
+                  <n-tag :bordered="false" type="info" size="medium" class="proxy-tag">
                     {{ globalGroup.all.length }} доступных опций
-                  </н-tag>
-                </н-space>
+                  </n-tag>
+                </n-space>
               </div>
 
-              <н-grid :x-gap="16" :y-gap="16" :cols="gridCols" responsive="screen">
-                <н-grid-item v-for="(proxy, i) in globalGroup.all" :key="i">
-                  <н-card
+              <n-grid :x-gap="16" :y-gap="16" :cols="gridCols" responsive="screen">
+                <n-grid-item v-for="(proxy, i) in globalGroup.all" :key="i">
+                  <n-card
                     :class="{
                       'proxy-node-card': true,
                       'proxy-node-card-active': globalGroup.now === proxy,
@@ -111,14 +111,14 @@
                     :bordered="false"
                     hoverable
                   >
-                    <н-space vertical :size="14">
-                      <н-flex justify="space-between" align="center">
+                    <n-space vertical :size="14">
+                      <n-flex justify="space-between" align="center">
                         <div class="proxy-name-container">
-                          <н-ellipsis style="max-width: 100%" :tooltip="{ width: 'trigger' }">
+                          <n-ellipsis style="max-width: 100%" :tooltip="{ width: 'trigger' }">
                             {{ proxy }}
-                          </н-ellipsis>
+                          </n-ellipsis>
                         </div>
-                        <н-tag
+                        <n-tag
                           :type="getProxyTypeColor(getProxyType(proxy))"
                           size="small"
                           :bordered="false"
@@ -126,11 +126,11 @@
                           class="type-tag"
                         >
                           {{ getProxyType(proxy) }}
-                        </н-tag>
-                      </н-flex>
+                        </n-tag>
+                      </n-flex>
 
-                      <н-flex justify="space-between" align="center">
-                        <н-button
+                      <n-flex justify="space-between" align="center">
+                        <n-button
                           @click="changeProxy('GLOBAL', proxy)"
                           :type="globalGroup.now === proxy ? 'default' : 'primary'"
                           size="small"
@@ -139,25 +139,25 @@
                           class="proxy-button"
                         >
                           <template #icon>
-                            <н-icon>
+                            <n-icon>
                               <checkmark-circle-outline v-if="globalGroup.now === proxy" />
                               <swap-horizontal-outline v-else />
-                            </н-icon>
+                            </n-icon>
                           </template>
                           {{ globalGroup.now === proxy ? 'Используется' : 'Переключить' }}
-                        </н-button>
-                      </н-flex>
-                    </н-space>
-                  </н-card>
-                </н-grid-item>
-              </н-grid>
+                        </n-button>
+                      </n-flex>
+                    </n-space>
+                  </n-card>
+                </n-grid-item>
+              </n-grid>
             </div>
-          </н-tab-pane>
+          </n-tab-pane>
 
           <!-- Вкладка групп -->
-          <н-tab-pane name="groups" tab="Группы прокси">
-            <н-tabs type="line" animated v-model:value="activeGroupTab">
-              <н-tab-pane
+          <n-tab-pane name="groups" tab="Группы прокси">
+            <n-tabs type="line" animated v-model:value="activeGroupTab">
+              <n-tab-pane
                 v-for="(group, index) in proxyGroups"
                 :key="index"
                 :name="group.name"
@@ -165,22 +165,22 @@
               >
                 <div class="proxy-group">
                   <div class="proxy-group-info">
-                    <н-space align="center" :size="12">
-                      <н-tag :bordered="false" type="success" size="medium" class="proxy-tag">
+                    <n-space align="center" :size="12">
+                      <n-tag :bordered="false" type="success" size="medium" class="proxy-tag">
                         Текущий узел: {{ group.now }}
-                      </н-tag>
-                      <н-tag :bordered="false" type="info" size="medium" class="proxy-tag">
+                      </n-tag>
+                      <n-tag :bordered="false" type="info" size="medium" class="proxy-tag">
                         {{ group.all.length }} узлов
-                      </н-tag>
-                      <н-tag :bordered="false" type="warning" size="medium" class="proxy-tag">
+                      </n-tag>
+                      <n-tag :bordered="false" type="warning" size="medium" class="proxy-tag">
                         {{ group.type }}
-                      </н-tag>
-                    </н-space>
+                      </n-tag>
+                    </n-space>
                   </div>
 
-                  <н-grid :x-gap="16" :y-gap="16" :cols="gridCols" responsive="screen">
-                    <н-grid-item v-for="(proxy, i) in group.all" :key="i">
-                      <н-card
+                  <n-grid :x-gap="16" :y-gap="16" :cols="gridCols" responsive="screen">
+                    <n-grid-item v-for="(proxy, i) in group.all" :key="i">
+                      <n-card
                         :class="{
                           'proxy-node-card': true,
                           'proxy-node-card-active': group.now === proxy,
@@ -188,14 +188,14 @@
                         :bordered="false"
                         hoverable
                       >
-                        <н-space vertical :size="14">
-                          <н-flex justify="space-between" align="center">
+                        <n-space vertical :size="14">
+                          <n-flex justify="space-between" align="center">
                             <div class="proxy-name-container">
-                              <н-ellipsis style="max-width: 100%" :tooltip="{ width: 'trigger' }">
+                              <n-ellipsis style="max-width: 100%" :tooltip="{ width: 'trigger' }">
                                 {{ proxy }}
-                              </н-ellipsis>
+                              </n-ellipsis>
                             </div>
-                            <н-tag
+                            <n-tag
                               :type="getNodeDelayType(getNodeDelay(proxy))"
                               size="small"
                               :bordered="false"
@@ -205,11 +205,11 @@
                               {{
                                 getNodeDelay(proxy) === 0 ? 'Не тестировалось' : getNodeDelay(proxy) + 'мс'
                               }}
-                            </н-tag>
-                          </н-flex>
+                            </n-tag>
+                          </n-flex>
 
-                          <н-flex justify="space-between" align="center">
-                            <н-button
+                          <n-flex justify="space-between" align="center">
+                            <n-button
                               @click="changeProxy(group.name, proxy)"
                               :type="group.now === proxy ? 'default' : 'primary'"
                               size="small"
@@ -218,14 +218,14 @@
                               class="proxy-button"
                             >
                               <template #icon>
-                                <н-icon>
+                                <n-icon>
                                   <checkmark-circle-outline v-if="group.now === proxy" />
                                   <swap-horizontal-outline v-else />
-                                </н-icon>
+                                </n-icon>
                               </template>
                               {{ group.now === proxy ? 'Используется' : 'Переключить' }}
-                            </н-button>
-                            <н-button
+                            </n-button>
+                            <n-button
                               @click="testNodeDelay(proxy)"
                               :loading="testingNodes[proxy]"
                               secondary
@@ -236,36 +236,36 @@
                               v-if="isRealNode(proxy)"
                             >
                               <template #icon>
-                                <н-icon><speedometer-outline /></н-icon>
+                                <n-icon><speedometer-outline /></n-icon>
                               </template>
                               Тест скорости
-                            </н-button>
-                          </н-flex>
-                        </н-space>
-                      </н-card>
-                    </н-grid-item>
-                  </н-grid>
+                            </n-button>
+                          </n-flex>
+                        </n-space>
+                      </n-card>
+                    </n-grid-item>
+                  </n-grid>
                 </div>
-              </н-tab-pane>
-            </н-tabs>
-          </н-tab-pane>
+              </n-tab-pane>
+            </n-tabs>
+          </n-tab-pane>
 
           <!-- Вкладка узлов -->
-          <н-tab-pane name="nodes" tab="Все узлы">
+          <n-tab-pane name="nodes" tab="Все узлы">
             <div class="nodes-filter">
-              <н-space :size="16" align="center">
-                <н-input
+              <n-space :size="16" align="center">
+                <n-input
                   v-model:value="searchText"
                   placeholder="Поиск по имени узла..."
                   clearable
                   class="search-input"
                 >
                   <template #prefix>
-                    <н-icon><search-outline /></н-icon>
+                    <n-icon><search-outline /></n-icon>
                   </template>
-                </н-input>
+                </n-input>
 
-                <н-button
+                <n-button
                   @click="batchTestAllNodes"
                   :loading="batchTesting"
                   type="primary"
@@ -273,14 +273,14 @@
                   size="medium"
                 >
                   <template #icon>
-                    <н-icon><flash-outline /></н-icon>
+                    <n-icon><flash-outline /></n-icon>
                   </template>
                   Тестировать все узлы
-                </н-button>
-              </н-space>
+                </n-button>
+              </n-space>
 
               <!-- Прогресс бар тестирования -->
-              <н-progress
+              <n-progress
                 v-if="batchTesting"
                 type="line"
                 :percentage="batchTestProgress.percentage"
@@ -288,20 +288,20 @@
                 class="batch-test-progress"
               >
                 {{ batchTestProgress.text }}
-              </н-progress>
+              </n-progress>
             </div>
 
-            <н-grid :x-gap="16" :y-gap="16" :cols="gridCols" responsive="screen">
-              <н-grid-item v-for="(node, i) in filteredNodes" :key="i">
-                <н-card class="proxy-node-card node-card" :bordered="false" hoverable>
-                  <н-space vertical :size="14">
-                    <н-flex justify="space-between" align="center">
+            <n-grid :x-gap="16" :y-gap="16" :cols="gridCols" responsive="screen">
+              <n-grid-item v-for="(node, i) in filteredNodes" :key="i">
+                <n-card class="proxy-node-card node-card" :bordered="false" hoverable>
+                  <n-space vertical :size="14">
+                    <n-flex justify="space-between" align="center">
                       <div class="proxy-name-container">
-                        <н-ellipsis style="max-width: 100%" :tooltip="{ width: 'trigger' }">
+                        <n-ellipsis style="max-width: 100%" :tooltip="{ width: 'trigger' }">
                           {{ node.name }}
-                        </н-ellipsis>
+                        </n-ellipsis>
                       </div>
-                      <н-tag
+                      <n-tag
                         :type="getNodeDelayType(node.delay)"
                         size="small"
                         :bordered="false"
@@ -309,17 +309,17 @@
                         class="delay-tag"
                       >
                         {{ node.delay === 0 ? 'Не тестировалось' : node.delay + 'мс' }}
-                      </н-tag>
-                    </н-flex>
+                      </n-tag>
+                    </n-flex>
 
-                    <н-flex align="center" class="node-type">
-                      <н-tag size="small" :bordered="false" :type="getProxyTypeColor(node.type)">
+                    <n-flex align="center" class="node-type">
+                      <n-tag size="small" :bordered="false" :type="getProxyTypeColor(node.type)">
                         {{ node.type }}
-                      </н-tag>
-                    </н-flex>
+                      </n-tag>
+                    </n-flex>
 
-                    <н-flex justify="center" align="center">
-                      <н-button
+                    <n-flex justify="center" align="center">
+                      <n-button
                         @click="testNodeDelay(node.name)"
                         :loading="testingNodes[node.name]"
                         secondary
@@ -329,25 +329,25 @@
                         class="proxy-button"
                       >
                         <template #icon>
-                          <н-icon><speedometer-outline /></н-icon>
+                          <n-icon><speedometer-outline /></n-icon>
                         </template>
                         Тест скорости
-                      </н-button>
-                    </н-flex>
-                  </н-space>
-                </н-card>
-              </н-grid-item>
-            </н-grid>
+                      </n-button>
+                    </n-flex>
+                  </n-space>
+                </n-card>
+              </n-grid-item>
+            </n-grid>
 
-            <н-empty
+            <n-empty
               v-if="filteredNodes.length === 0"
               description="Узлы не найдены"
               class="empty-container"
             />
-          </н-tab-pane>
-        </н-tabs>
-      </н-card>
-    </н-spin>
+          </n-tab-pane>
+        </n-tabs>
+      </n-card>
+    </n-spin>
   </div>
 </template>
 
