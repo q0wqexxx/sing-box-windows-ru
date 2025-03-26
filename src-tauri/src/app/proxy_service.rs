@@ -9,7 +9,7 @@ use serde_json::{json, Value};
 use reqwest::Client;
 use tauri::{Runtime, Emitter};
 
-// 修改代理模式为系统代理
+// Изменение режима прокси на системный прокси
 #[tauri::command]
 pub fn set_system_proxy() -> Result<(), String> {
     let config_path = paths::get_config_path();
@@ -41,10 +41,10 @@ pub fn set_system_proxy() -> Result<(), String> {
     }
 }
 
-// 修改TUN 模式为代理模式
+// Изменение режима TUN на прокси режим
 #[tauri::command]
 pub fn set_tun_proxy() -> Result<(), String> {
-    set_tun_proxy_impl().map_err(|e| format!("设置TUN代理失败: {}", e))
+    set_tun_proxy_impl().map_err(|e| format!("Не удалось установить TUN прокси: {}", e))
 }
 
 fn set_tun_proxy_impl() -> Result<(), Box<dyn Error>> {
@@ -52,7 +52,7 @@ fn set_tun_proxy_impl() -> Result<(), Box<dyn Error>> {
     let path = Path::new(&work_dir).join("sing-box/config.json");
     let mut json_util = ConfigUtil::new(path.to_str().unwrap())?;
 
-    let target_keys = vec!["inbounds"]; // 修改为你的属性路径
+    let target_keys = vec!["inbounds"]; // Измените на ваш путь к свойству
     let new_structs = vec![
         config_model::Inbound {
             r#type: "mixed".to_string(),
@@ -85,58 +85,58 @@ fn set_tun_proxy_impl() -> Result<(), Box<dyn Error>> {
 
     json_util.modify_property(
         &target_keys,
-        serde_json::to_value(new_structs).map_err(|e| format!("序列化配置失败: {}", e))?,
+        serde_json::to_value(new_structs).map_err(|e| format!("Не удалось сериализовать конфигурацию: {}", e))?,
     );
     json_util
         .save()
-        .map_err(|e| format!("保存配置文件失败: {}", e))?;
+        .map_err(|e| format!("Не удалось сохранить файл конфигурации: {}", e))?;
 
-    info!("TUN代理模式已设置");
+    info!("TUN прокси режим установлен");
     Ok(())
 }
 
-// 切换 IPV6版本模式
+// Переключение версии IP
 #[tauri::command]
 pub fn toggle_ip_version(prefer_ipv6: bool) -> Result<(), String> {
     info!(
-        "开始切换IP版本模式: {}",
-        if prefer_ipv6 { "IPv6优先" } else { "仅IPv4" }
+        "Начало переключения режима версии IP: {}",
+        if prefer_ipv6 { "IPv6 предпочтительно" } else { "Только IPv4" }
     );
 
     let work_dir = get_work_dir();
     let path = Path::new(&work_dir).join("sing-box/config.json");
 
-    // 读取文件内容
-    let content = std::fs::read_to_string(&path).map_err(|e| format!("读取配置文件失败: {}", e))?;
+    // Чтение содержимого файла
+    let content = std::fs::read_to_string(&path).map_err(|e| format!("Не удалось прочитать файл конфигурации: {}", e))?;
 
-    // 直接替换字符串
+    // Прямая замена строки
     let modified_content = if prefer_ipv6 {
         content.replace("\"ipv4_only\"", "\"prefer_ipv6\"")
     } else {
         content.replace("\"prefer_ipv6\"", "\"ipv4_only\"")
     };
 
-    // 验证修改后的内容是否是有效的 JSON
+    // Проверка, является ли измененное содержимое допустимым JSON
     serde_json::from_str::<serde_json::Value>(&modified_content)
-        .map_err(|e| format!("修改后的配置不是有效的 JSON: {}", e))?;
+        .map_err(|e| format!("Измененная конфигурация не является допустимым JSON: {}", e))?;
 
-    // 保存修改后的内容
-    std::fs::write(&path, modified_content).map_err(|e| format!("保存配置文件失败: {}", e))?;
+    // Сохранение измененного содержимого
+    std::fs::write(&path, modified_content).map_err(|e| format!("Не удалось сохранить файл конфигурации: {}", e))?;
 
     info!(
-        "IP版本模式已成功切换为: {}",
-        if prefer_ipv6 { "IPv6优先" } else { "仅IPv4" }
+        "Режим версии IP успешно переключен на: {}",
+        if prefer_ipv6 { "IPv6 предпочтительно" } else { "Только IPv4" }
     );
     Ok(())
 }
 
-// 获取API Token
+// Получение API токена
 #[tauri::command]
 pub fn get_api_token() -> String {
     network::DEFAULT_API_TOKEN.to_string()
 }
 
-/// 获取代理列表
+/// Получение списка прокси
 #[tauri::command]
 pub async fn get_proxies() -> Result<Value, String> {
     let token = get_api_token();
@@ -145,29 +145,29 @@ pub async fn get_proxies() -> Result<Value, String> {
         network::DEFAULT_CLASH_API_PORT,
         token);
     
-    // 创建禁用代理的HTTP客户端
+    // Создание HTTP клиента без прокси
     let client = Client::builder()
         .no_proxy()
         .build()
-        .map_err(|e| format!("创建HTTP客户端失败: {}", e))?;
+        .map_err(|e| format!("Не удалось создать HTTP клиент: {}", e))?;
     
-    // 发送请求并获取响应
+    // Отправка запроса и получение ответа
     let response = client.get(&url)
         .header("Accept", "application/json")
         .header("Content-Type", "application/json")
         .send()
         .await
-        .map_err(|e| format!("获取代理列表失败: {}", e))?;
+        .map_err(|e| format!("Не удалось получить список прокси: {}", e))?;
     
-    // 解析响应为JSON
+    // Разбор ответа в JSON
     let json = response.json::<Value>()
         .await
-        .map_err(|e| format!("解析代理列表失败: {}", e))?;
+        .map_err(|e| format!("Не удалось разобрать список прокси: {}", e))?;
     
     Ok(json)
 }
 
-/// 切换代理
+/// Переключение прокси
 #[tauri::command]
 pub async fn change_proxy(group: String, proxy: String) -> Result<(), String> {
     let token = get_api_token();
@@ -177,38 +177,38 @@ pub async fn change_proxy(group: String, proxy: String) -> Result<(), String> {
         group, 
         token);
     
-    // 创建禁用代理的HTTP客户端
+    // Создание HTTP клиента без прокси
     let client = Client::builder()
         .no_proxy()
         .build()
-        .map_err(|e| format!("创建HTTP客户端失败: {}", e))?;
+        .map_err(|e| format!("Не удалось создать HTTP клиент: {}", e))?;
     
-    // 请求体
+    // Тело запроса
     let payload = json!({
         "name": proxy
     });
     
-    // 发送请求并获取响应
+    // Отправка запроса и получение ответа
     let response = client.put(&url)
         .header("Accept", "application/json")
         .header("Content-Type", "application/json")
         .json(&payload)
         .send()
         .await
-        .map_err(|e| format!("切换代理失败: {}", e))?;
+        .map_err(|e| format!("Не удалось переключить прокси: {}", e))?;
     
-    // 检查响应状态
+    // Проверка статуса ответа
     if !response.status().is_success() {
-        return Err(format!("服务器返回错误: {}", response.status()));
+        return Err(format!("Сервер вернул ошибку: {}", response.status()));
     }
     
     Ok(())
 }
 
-/// 测试节点延迟
+/// Тестирование задержки узла
 #[tauri::command]
 pub async fn test_node_delay(name: String) -> Result<u64, String> {
-    // 使用默认测试URL
+    // Использование URL по умолчанию для тестирования
     let test_url = "https://www.gstatic.com/generate_204";
     let token = get_api_token();
     let url = format!("http://{}:{}/proxies/{}/delay?url={}&timeout=5000&token={}", 
@@ -218,26 +218,26 @@ pub async fn test_node_delay(name: String) -> Result<u64, String> {
         urlencoding::encode(test_url),
         token);
     
-    // 创建禁用代理的HTTP客户端
+    // Создание HTTP клиента без прокси
     let client = Client::builder()
         .no_proxy()
         .build()
-        .map_err(|e| format!("创建HTTP客户端失败: {}", e))?;
+        .map_err(|e| format!("Не удалось создать HTTP клиент: {}", e))?;
     
-    // 发送请求并获取响应
+    // Отправка запроса и получение ответа
     let response = client.get(&url)
         .header("Accept", "application/json")
         .header("Content-Type", "application/json")
         .send()
         .await
-        .map_err(|e| format!("测试节点延迟失败: {}", e))?;
+        .map_err(|e| format!("Не удалось протестировать задержку узла: {}", e))?;
     
-    // 解析响应为JSON
+    // Разбор ответа в JSON
     let json = response.json::<Value>()
         .await
-        .map_err(|e| format!("解析测试结果失败: {}", e))?;
+        .map_err(|e| format!("Не удалось разобрать результат теста: {}", e))?;
     
-    // 获取延迟值
+    // Получение значения задержки
     let delay = json["delay"]
         .as_u64()
         .unwrap_or(0);
@@ -245,26 +245,26 @@ pub async fn test_node_delay(name: String) -> Result<u64, String> {
     Ok(delay)
 }
 
-/// 批量测试节点延迟
+/// Пакетное тестирование задержки узлов
 #[tauri::command]
 pub async fn batch_test_nodes<R: Runtime>(
     window: tauri::Window<R>,
     nodes: Vec<String>, 
     server: Option<String>
 ) -> Result<(), String> {
-    // 使用默认测试URL或指定的URL
+    // Использование URL по умолчанию или указанного URL для тестирования
     let test_url = server.unwrap_or_else(|| "https://www.gstatic.com/generate_204".to_string());
     let token = get_api_token();
     
-    // 创建禁用代理的HTTP客户端
+    // Создание HTTP клиента без прокси
     let client = Client::builder()
         .no_proxy()
         .build()
-        .map_err(|e| format!("创建HTTP客户端失败: {}", e))?;
+        .map_err(|e| format!("Не удалось создать HTTP клиент: {}", e))?;
     
-    // 遍历节点列表进行测试
+    // Перебор списка узлов для тестирования
     for (index, name) in nodes.iter().enumerate() {
-        // 构建请求URL
+        // Формирование URL запроса
         let url = format!("http://{}:{}/proxies/{}/delay?url={}&timeout=5000&token={}", 
             network::DEFAULT_CLASH_API_ADDRESS, 
             network::DEFAULT_CLASH_API_PORT,
@@ -272,7 +272,7 @@ pub async fn batch_test_nodes<R: Runtime>(
             urlencoding::encode(&test_url),
             token);
         
-        // 发送进度事件
+        // Отправка события прогресса
         let _ = window.emit("test-nodes-progress", json!({
             "current": index + 1,
             "total": nodes.len(),
@@ -280,7 +280,7 @@ pub async fn batch_test_nodes<R: Runtime>(
             "status": "testing"
         }));
         
-        // 发送请求并获取结果
+        // Отправка запроса и получение результата
         match client.get(&url)
             .header("Accept", "application/json")
             .header("Content-Type", "application/json")
@@ -288,7 +288,7 @@ pub async fn batch_test_nodes<R: Runtime>(
             Ok(response) => {
                 match response.json::<Value>().await {
                     Ok(data) => {
-                        // 发送测试结果事件
+                        // Отправка события результата теста
                         let _ = window.emit("test-node-result", json!({
                             "name": name,
                             "delay": data["delay"],
@@ -296,32 +296,32 @@ pub async fn batch_test_nodes<R: Runtime>(
                         }));
                     },
                     Err(e) => {
-                        // 发送测试失败事件
+                        // Отправка события ошибки теста
                         let _ = window.emit("test-node-result", json!({
                             "name": name,
                             "delay": 0,
                             "success": false,
-                            "error": format!("解析结果失败: {}", e)
+                            "error": format!("Не удалось разобрать результат: {}", e)
                         }));
                     }
                 }
             },
             Err(e) => {
-                // 发送测试失败事件
+                // Отправка события ошибки теста
                 let _ = window.emit("test-node-result", json!({
                     "name": name,
                     "delay": 0,
                     "success": false,
-                    "error": format!("请求失败: {}", e)
+                    "error": format!("Запрос не удался: {}", e)
                 }));
             }
         }
         
-        // 短暂延迟以避免过快发送请求
+        // Короткая задержка, чтобы избежать слишком быстрого отправления запросов
         tokio::time::sleep(tokio::time::Duration::from_millis(200)).await;
     }
     
-    // 发送测试完成事件
+    // Отправка события завершения тестирования
     let _ = window.emit("test-nodes-complete", json!({
         "total": nodes.len()
     }));
@@ -329,7 +329,7 @@ pub async fn batch_test_nodes<R: Runtime>(
     Ok(())
 }
 
-/// 获取内核版本信息
+/// Получение информации о версии ядра
 #[tauri::command]
 pub async fn get_version_info() -> Result<Value, String> {
     let token = get_api_token();
@@ -338,29 +338,29 @@ pub async fn get_version_info() -> Result<Value, String> {
         network::DEFAULT_CLASH_API_PORT,
         token);
     
-    // 创建禁用代理的HTTP客户端
+    // Создание HTTP клиента без прокси
     let client = Client::builder()
         .no_proxy()
         .build()
-        .map_err(|e| format!("创建HTTP客户端失败: {}", e))?;
+        .map_err(|e| format!("Не удалось создать HTTP клиент: {}", e))?;
     
-    // 发送请求并获取响应
+    // Отправка запроса и получение ответа
     let response = client.get(&url)
         .header("Accept", "application/json")
         .header("Content-Type", "application/json")
         .send()
         .await
-        .map_err(|e| format!("获取版本信息失败: {}", e))?;
+        .map_err(|e| format!("Не удалось получить информацию о версии: {}", e))?;
     
-    // 解析响应为JSON
+    // Разбор ответа в JSON
     let json = response.json::<Value>()
         .await
-        .map_err(|e| format!("解析版本信息失败: {}", e))?;
+        .map_err(|e| format!("Не удалось разобрать информацию о версии: {}", e))?;
     
     Ok(json)
 }
 
-/// 获取规则列表
+/// Получение списка правил
 #[tauri::command]
 pub async fn get_rules() -> Result<Value, String> {
     let token = get_api_token();
@@ -369,25 +369,25 @@ pub async fn get_rules() -> Result<Value, String> {
         network::DEFAULT_CLASH_API_PORT,
         token);
     
-    // 创建禁用代理的HTTP客户端
+    // Создание HTTP клиента без прокси
     let client = Client::builder()
         .no_proxy()
         .build()
-        .map_err(|e| format!("创建HTTP客户端失败: {}", e))?;
+        .map_err(|e| format!("Не удалось создать HTTP клиент: {}", e))?;
 
-    info!("获取规则列表{}", url);
-    // 发送请求并获取响应
+    info!("Получение списка правил {}", url);
+    // Отправка запроса и получение ответа
     let response = client.get(&url)
         .header("Accept", "application/json")
         .header("Content-Type", "application/json")
         .send()
         .await
-        .map_err(|e| format!("获取规则列表失败: {}", e))?;
+        .map_err(|e| format!("Не удалось получить список правил: {}", e))?;
     
-    // 解析响应为JSON
+    // Разбор ответа в JSON
     let json = response.json::<Value>()
         .await
-        .map_err(|e| format!("解析规则列表失败: {}", e))?;
+        .map_err(|e| format!("Не удалось разобрать список правил: {}", e))?;
     
     Ok(json)
-} 
+}

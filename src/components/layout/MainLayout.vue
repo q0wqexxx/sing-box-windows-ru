@@ -90,7 +90,7 @@
     </n-layout>
   </n-layout>
 
-  <!-- 更新对话框 -->
+  <!-- Обновление диалогового окна -->
   <update-modal
     v-model:show="showUpdateModal"
     :latest-version="updateInfo.latest_version"
@@ -139,7 +139,7 @@ const collapsed = ref(false)
 const currentMenu = ref(0)
 const isFullscreen = ref(false)
 
-// 更新对话框相关状态
+// Состояние диалогового окна обновления
 const showUpdateModal = ref(false)
 const updateInfo = ref({
   latest_version: '',
@@ -147,7 +147,7 @@ const updateInfo = ref({
   has_update: false,
 })
 
-// 检查更新
+// Проверка обновлений
 const checkUpdateWithNotification = async () => {
   try {
     const result = await appStore.checkUpdate()
@@ -156,24 +156,24 @@ const checkUpdateWithNotification = async () => {
       showUpdateModal.value = true
     }
   } catch (error) {
-    console.error('检查更新失败:', error)
+    console.error('Ошибка проверки обновлений:', error)
   }
 }
 
-// 处理更新
+// Обработка обновления
 const handleUpdate = async (downloadUrl: string) => {
   try {
     await appStore.downloadAndInstallUpdate()
   } catch (error) {
     notification.error({
-      title: '更新失败',
+      title: 'Ошибка обновления',
       content: String(error),
       duration: 5000,
     })
   }
 }
 
-// 取消更新
+// Отмена обновления
 const handleCancelUpdate = () => {
   showUpdateModal.value = false
 }
@@ -189,40 +189,40 @@ const onToggleFullScreen = async () => {
 
 const menuOptions = computed(() => [
   {
-    label: '主页',
+    label: 'Главная',
     key: 0,
     icon: HomeOutline,
   },
   {
-    label: '代理',
+    label: 'Прокси',
     key: 1,
     disabled: !appStore.isRunning,
     icon: SwapHorizontalOutline,
   },
   {
-    label: '订阅',
+    label: 'Подписка',
     key: 4,
     icon: AtCircleOutline,
   },
   {
-    label: '规则',
+    label: 'Правила',
     key: 2,
     disabled: !appStore.isRunning,
     icon: FilterOutline,
   },
   {
-    label: '连接',
+    label: 'Соединения',
     key: 3,
     disabled: !appStore.isRunning,
     icon: LinkOutline,
   },
   {
-    label: '日志',
+    label: 'Логи',
     key: 5,
     icon: DocumentTextOutline,
   },
   {
-    label: '设置',
+    label: 'Настройки',
     key: 6,
     icon: SettingsOutline,
   },
@@ -257,18 +257,18 @@ function onSelect(key: number) {
   currentMenu.value = key
 }
 
-// 监听窗口事件
+// Слушаем события окна
 onMounted(async () => {
-  // 获取当前版本号并检查更新
+  // Получаем текущую версию и проверяем обновления
   await appStore.fetchAppVersion()
   await checkUpdateWithNotification()
 
-  // 监听窗口显示
+  // Слушаем событие показа окна
   await appWindow.listen('tauri://show', () => {
     mitt.emit('window-show')
   })
 
-  // 监听窗口恢复
+  // Слушаем событие восстановления окна
   await appWindow.listen('tauri://restore', () => {
     mitt.emit('window-restore')
   })
@@ -370,7 +370,7 @@ onMounted(async () => {
   transform: translateY(-1px);
 }
 
-/* 增加选中特效 */
+/* Добавление эффекта выбора */
 .menu-item::before {
   content: '';
   position: absolute;

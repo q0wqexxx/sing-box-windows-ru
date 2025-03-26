@@ -4,7 +4,7 @@ use tracing::{error, info};
 use serde_json::json;
 use std::path::Path;
 use crate::utils::app_util::get_work_dir;
-use crate::utils::file_util::{ unzip_file};
+use crate::utils::file_util::{unzip_file};
 use std::os::windows::process::CommandExt;
 use tauri::Emitter;
 use crate::app::constants::{paths, process, messages};
@@ -16,12 +16,12 @@ use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
 use url::Url;
 use serde_json::Value;
 
-// 全局进程管理器
+// Глобальный менеджер процессов
 lazy_static::lazy_static! {
     pub(crate) static ref PROCESS_MANAGER: Arc<ProcessManager> = Arc::new(ProcessManager::new());
 }
 
-// 检查内核版本
+// Проверка версии ядра
 #[tauri::command]
 pub async fn check_kernel_version() -> Result<String, String> {
     let kernel_path = paths::get_kernel_path();
@@ -45,25 +45,25 @@ pub async fn check_kernel_version() -> Result<String, String> {
     Ok(version_info.to_string())
 }
 
-// 运行内核
+// Запуск ядра
 #[tauri::command]
 pub async fn start_kernel() -> Result<(), String> {
     PROCESS_MANAGER.start().await.map_err(|e| e.to_string())
 }
 
-// 停止内核
+// Остановка ядра
 #[tauri::command]
 pub async fn stop_kernel() -> Result<(), String> {
     PROCESS_MANAGER.stop().await.map_err(|e| e.to_string())
 }
 
-// 重启内核
+// Перезапуск ядра
 #[tauri::command]
 pub async fn restart_kernel() -> Result<(), String> {
     PROCESS_MANAGER.restart().await.map_err(|e| e.to_string())
 }
 
-// 获取进程状态
+// Получение статуса процесса
 #[tauri::command]
 pub async fn get_process_status() -> serde_json::Value {
     let info = PROCESS_MANAGER.get_status().await;
@@ -74,7 +74,7 @@ pub async fn get_process_status() -> serde_json::Value {
     })
 }
 
-// 获取内存使用情况
+// Получение использования памяти
 #[tauri::command]
 pub async fn get_memory_usage() -> Result<String, String> {
     let output = std::process::Command::new("wmic")
@@ -103,42 +103,42 @@ pub async fn get_memory_usage() -> Result<String, String> {
     }
 }
 
-// 下载内核
+// Загрузка последней версии ядра
 #[tauri::command]
 pub async fn download_latest_kernel(window: tauri::Window) -> Result<(), String> {
     let work_dir = get_work_dir();
-    info!("当前工作目录: {}", work_dir);
+    info!("Текущий рабочий каталог: {}", work_dir);
 
     let path = Path::new(&work_dir).join("sing-box/");
-    info!("目标下载目录: {}", path.display());
+    info!("Целевой каталог загрузки: {}", path.display());
 
-    // 如果目录已存在，先检查是否为有效目录
+    // Если каталог существует, сначала проверяем, является ли он допустимым каталогом
     if path.exists() {
         if !path.is_dir() {
-            error!("sing-box 路径存在但不是目录");
-            return Err("sing-box 路径存在但不是目录".to_string());
+            error!("Путь sing-box существует, но не является каталогом");
+            return Err("Путь sing-box существует, но не является каталогом".toString());
         }
     }
 
-    // 确保目录存在
-    if let Err(e) = std::fs::create_dir_all(&path) {
-        error!("创建目录失败: {}", e);
-        return Err(format!("创建目录失败: {}", e));
+    // Убедитесь, что каталог существует
+    if let Err(e) = std::.fs::create_dir_all(&path) {
+        error!("Не удалось создать каталог: {}", e);
+        return Err(format!("Не удалось создать каталог: {}", e));
     }
-    info!("已确保下载目录存在");
+    info!("Каталог загрузки существует");
 
-    info!("正在准备下载最新版本...");
-    // 发送进度事件
+    info!("Подготовка к загрузке последней версии...");
+    // Отправка события прогресса
     let _ = window.emit(
         "download-progress",
         json!({
             "status": "checking",
             "progress": 0,
-            "message": "正在获取最新版本信息..."
+            "message": "Получение информации о последней версии..."
         }),
     );
 
-    // 获取最新版本信息
+    // Получение информации о последней версии
     let client = reqwest::Client::new();
     let releases_url = "https://api.github.com/repos/SagerNet/sing-box/releases/latest";
     let response = client
@@ -146,33 +146,33 @@ pub async fn download_latest_kernel(window: tauri::Window) -> Result<(), String>
         .header("User-Agent", "sing-box-windows")
         .send()
         .await
-        .map_err(|e| format!("获取版本信息失败: {}", e))?;
+        .map_err(|e| format!("Не удалось получить информацию о версии: {}", e))?;
 
     let release: serde_json::Value = response
         .json()
         .await
-        .map_err(|e| format!("解析版本信息失败: {}", e))?;
+        .map_err(|e| format!("Не удалось разобрать информацию о версии: {}", e))?;
 
-    // 获取版本号
+    // Получение номера версии
     let version = release["tag_name"]
         .as_str()
-        .ok_or("无法获取版本号")?
+        .ok_or("Не удалось получить номер версии")?
         .trim_start_matches('v')
-        .to_string();
+        .toString();
 
-    // 获取当前系统平台和架构
+    // Получение текущей платформы и архитектуры системы
     let platform = std::env::consts::OS;
     let mut arch = std::env::consts::ARCH;
     if arch == "x86_64" {
         arch = "amd64";
     }
 
-    // 构建目标文件名
+    // Формирование имени целевого файла
     let target_asset_name = format!("sing-box-{}-{}-{}.zip", version, platform, arch);
-    info!("目标文件名: {}", target_asset_name);
+    info!("Имя целевого файла: {}", target_asset_name);
 
-    // 查找Windows版本资源
-    let assets = release["assets"].as_array().ok_or("无法获取发布资源")?;
+    // Поиск ресурса для Windows
+    let assets = release["assets"].as_array().ok_or("Не удалось получить ресурсы выпуска")?;
     let asset = assets
         .iter()
         .find(|asset| {
@@ -182,90 +182,90 @@ pub async fn download_latest_kernel(window: tauri::Window) -> Result<(), String>
                 false
             }
         })
-        .ok_or("未找到适用于Windows的资源")?;
+        .ok_or("Не удалось найти ресурс для Windows")?;
 
-    // 获取下载链接
+    // Получение ссылки для загрузки
     let original_url = asset["browser_download_url"]
         .as_str()
-        .ok_or("无法获取下载链接")?;
+        .ok_or("Не удалось получить ссылку для загрузки")?;
 
-    info!("找到下载链接: {}", original_url);
+    info!("Найдена ссылка для загрузки: {}", original_url);
 
     let download_path = Path::new(&path).join(&target_asset_name);
-    info!("目标下载路径: {}", download_path.display());
+    info!("Целевой путь загрузки: {}", download_path.display());
 
-    // 发送进度事件
+    // Отправка события прогресса
     let _ = window.emit(
         "download-progress",
         json!({
             "status": "downloading",
             "progress": 20,
-            "message": format!("开始下载文件: {}", target_asset_name)
+            "message": format!("Начало загрузки файла: {}", target_asset_name)
         }),
     );
 
-    // 下载文件
+    // Загрузка файла
     let window_clone = window.clone();
     if let Err(e) = crate::utils::file_util::download_with_fallback(
         original_url, 
         download_path.to_str().unwrap(), 
         move |progress| {
-            let real_progress = 20 + (progress as f64 * 0.6) as u32; // 20-80%的进度用于下载
+            let real_progress = 20 + (progress as f64 * 0.6) as u32; // 20-80% прогресса для загрузки
             let _ = window_clone.emit(
                 "download-progress",
                 json!({
                     "status": "downloading",
                     "progress": real_progress,
-                    "message": format!("正在下载: {}%", progress)
+                    "message": format!("Загрузка: {}%", progress)
                 }),
             );
         }).await {
-        error!("下载失败: {}", e);
+        error!("Ошибка загрузки: {}", e);
         return Err(format!(
-            "下载失败: {}。\n您可以尝试手动下载：\n1. 访问 https://github.com/SagerNet/sing-box/releases/latest\n2. 下载 {}\n3. 解压并将文件放置在 {}/sing-box/ 目录下",
+            "Ошибка загрузки: {}.\nВы можете попробовать загрузить вручную:\n1. Перейдите на https://github.com/SagerNet/sing-box/releases/latest\n2. Загрузите {}\n3. Распакуйте и поместите файлы в каталог {}/sing-box/",
             e, target_asset_name, get_work_dir()
         ));
     }
 
-    // 解压文件
-    info!("开始解压文件...");
-    // 发送进度事件
+    // Распаковка файла
+    info!("Начало распаковки файла...");
+    // Отправка события прогресса
     let _ = window.emit(
         "download-progress",
         json!({
             "status": "extracting",
             "progress": 80,
-            "message": "正在解压文件..."
+            "message": "Распаковка файла..."
         }),
     );
 
     let out_path = Path::new(&work_dir).join("sing-box");
     match unzip_file(download_path.to_str().unwrap(), out_path.to_str().unwrap()).await {
         Ok(_) => {
-            info!("内核已下载并解压到: {}", out_path.display());
-            // 发送完成事件
+            info!("Ядро загружено и распаковано в: {}", out_path.display());
+            // Отправка события завершения
             let _ = window.emit(
                 "download-progress",
                 json!({
                     "status": "completed",
                     "progress": 100,
-                    "message": "下载完成！"
+                    "message": "Загрузка завершена!"
                 }),
             );
         }
         Err(e) => {
-            error!("解压文件失败: {}", e);
-            return Err(format!("解压文件失败: {}", e));
+            error!("Ошибка распаковки файла: {}", e);
+            return Err(format!("Ошибка распаковки файла: {}", e));
         }
     }
 
     Ok(())
 }
 
-/// 启动WebSocket数据中继
+/// Запуск WebSocket релея данных
 #[tauri::command]
 pub async fn start_websocket_relay<R: Runtime>(window: Window<R>) -> Result<(), String> {
-    // 启动四个不同类型的WebSocket中继
+    // Запуск четырех различных типов WebSocket релеев
     start_traffic_relay(window.clone()).await?;
     start_memory_relay(window.clone()).await?;
     start_logs_relay(window.clone()).await?;
@@ -274,13 +274,13 @@ pub async fn start_websocket_relay<R: Runtime>(window: Window<R>) -> Result<(), 
     Ok(())
 }
 
-/// 启动流量数据中继
+/// Запуск релея данных трафика
 async fn start_traffic_relay<R: Runtime>(window: Window<R>) -> Result<(), String> {
     let window_clone = window.clone();
     let (tx, mut rx) = mpsc::channel(32);
     let token = crate::app::proxy_service::get_api_token();
     
-    // 启动WebSocket连接和数据处理任务
+    // Запуск WebSocket соединения и задачи обработки данных
     let _handle = task::spawn(async move {
         let url = Url::parse(&format!("ws://127.0.0.1:12081/traffic?token={}", token)).unwrap();
         
@@ -288,7 +288,7 @@ async fn start_traffic_relay<R: Runtime>(window: Window<R>) -> Result<(), String
             Ok((ws_stream, _)) => {
                 let (mut _write, mut read) = ws_stream.split();
                 
-                // 持续读取WebSocket消息
+                // Постоянное чтение сообщений WebSocket
                 while let Some(message) = read.next().await {
                     match message {
                         Ok(Message::Text(text)) => {
@@ -298,7 +298,7 @@ async fn start_traffic_relay<R: Runtime>(window: Window<R>) -> Result<(), String
                         },
                         Ok(Message::Close(_)) => break,
                         Err(e) => {
-                            error!("WebSocket流量数据读取错误: {}", e);
+                            error!("Ошибка чтения данных WebSocket трафика: {}", e);
                             break;
                         },
                         _ => {}
@@ -306,12 +306,12 @@ async fn start_traffic_relay<R: Runtime>(window: Window<R>) -> Result<(), String
                 }
             },
             Err(e) => {
-                error!("WebSocket流量连接失败: {}", e);
+                error!("Ошибка подключения WebSocket трафика: {}", e);
             }
         }
     });
     
-    // 启动事件发送任务
+    // Запуск задачи отправки событий
     task::spawn(async move {
         while let Some(data) = rx.recv().await {
             let _ = window_clone.emit("traffic-data", data);
@@ -321,13 +321,13 @@ async fn start_traffic_relay<R: Runtime>(window: Window<R>) -> Result<(), String
     Ok(())
 }
 
-/// 启动内存数据中继
+/// Запуск релея данных памяти
 async fn start_memory_relay<R: Runtime>(window: Window<R>) -> Result<(), String> {
     let window_clone = window.clone();
     let (tx, mut rx) = mpsc::channel(32);
     let token = crate::app::proxy_service::get_api_token();
     
-    // 启动WebSocket连接和数据处理任务
+    // Запуск WebSocket соединения и задачи обработки данных
     let _handle = task::spawn(async move {
         let url = Url::parse(&format!("ws://127.0.0.1:12081/memory?token={}", token)).unwrap();
         
@@ -335,7 +335,7 @@ async fn start_memory_relay<R: Runtime>(window: Window<R>) -> Result<(), String>
             Ok((ws_stream, _)) => {
                 let (mut _write, mut read) = ws_stream.split();
                 
-                // 持续读取WebSocket消息
+                // Постоянное чтение сообщений WebSocket
                 while let Some(message) = read.next().await {
                     match message {
                         Ok(Message::Text(text)) => {
@@ -345,7 +345,7 @@ async fn start_memory_relay<R: Runtime>(window: Window<R>) -> Result<(), String>
                         },
                         Ok(Message::Close(_)) => break,
                         Err(e) => {
-                            error!("WebSocket内存数据读取错误: {}", e);
+                            error!("Ошибка чтения данных WebSocket памяти: {}", e);
                             break;
                         },
                         _ => {}
@@ -353,12 +353,12 @@ async fn start_memory_relay<R: Runtime>(window: Window<R>) -> Result<(), String>
                 }
             },
             Err(e) => {
-                error!("WebSocket内存连接失败: {}", e);
+                error!("Ошибка подключения WebSocket памяти: {}", e);
             }
         }
     });
     
-    // 启动事件发送任务
+    // Запуск задачи отправки событий
     task::spawn(async move {
         while let Some(data) = rx.recv().await {
             let _ = window_clone.emit("memory-data", data);
@@ -368,13 +368,13 @@ async fn start_memory_relay<R: Runtime>(window: Window<R>) -> Result<(), String>
     Ok(())
 }
 
-/// 启动日志数据中继
+/// Запуск релея данных логов
 async fn start_logs_relay<R: Runtime>(window: Window<R>) -> Result<(), String> {
     let window_clone = window.clone();
     let (tx, mut rx) = mpsc::channel(32);
     let token = crate::app::proxy_service::get_api_token();
     
-    // 启动WebSocket连接和数据处理任务
+    // Запуск WebSocket соединения и задачи обработки данных
     let _handle = task::spawn(async move {
         let url = Url::parse(&format!("ws://127.0.0.1:12081/logs?token={}", token)).unwrap();
         
@@ -382,7 +382,7 @@ async fn start_logs_relay<R: Runtime>(window: Window<R>) -> Result<(), String> {
             Ok((ws_stream, _)) => {
                 let (mut _write, mut read) = ws_stream.split();
                 
-                // 持续读取WebSocket消息
+                // Постоянное чтение сообщений WebSocket
                 while let Some(message) = read.next().await {
                     match message {
                         Ok(Message::Text(text)) => {
@@ -392,7 +392,7 @@ async fn start_logs_relay<R: Runtime>(window: Window<R>) -> Result<(), String> {
                         },
                         Ok(Message::Close(_)) => break,
                         Err(e) => {
-                            error!("WebSocket日志数据读取错误: {}", e);
+                            error!("Ошибка чтения данных WebSocket лога: {}", e);
                             break;
                         },
                         _ => {}
@@ -400,12 +400,12 @@ async fn start_logs_relay<R: Runtime>(window: Window<R>) -> Result<(), String> {
                 }
             },
             Err(e) => {
-                error!("WebSocket日志连接失败: {}", e);
+                error!("Ошибка подключения WebSocket лога: {}", e);
             }
         }
     });
     
-    // 启动事件发送任务
+    // Запуск задачи отправки событий
     task::spawn(async move {
         while let Some(data) = rx.recv().await {
             let _ = window_clone.emit("log-data", data);
@@ -415,13 +415,13 @@ async fn start_logs_relay<R: Runtime>(window: Window<R>) -> Result<(), String> {
     Ok(())
 }
 
-/// 启动连接数据中继
+/// Запуск релея данных соединений
 async fn start_connections_relay<R: Runtime>(window: Window<R>) -> Result<(), String> {
     let window_clone = window.clone();
     let (tx, mut rx) = mpsc::channel(32);
     let token = crate::app::proxy_service::get_api_token();
     
-    // 启动WebSocket连接和数据处理任务
+    // Запуск WebSocket соединения и задачи обработки данных
     let _handle = task::spawn(async move {
         let url = Url::parse(&format!("ws://127.0.0.1:12081/connections?token={}", token)).unwrap();
         
@@ -429,7 +429,7 @@ async fn start_connections_relay<R: Runtime>(window: Window<R>) -> Result<(), St
             Ok((ws_stream, _)) => {
                 let (mut _write, mut read) = ws_stream.split();
                 
-                // 持续读取WebSocket消息
+                // Постоянное чтение сообщений WebSocket
                 while let Some(message) = read.next().await {
                     match message {
                         Ok(Message::Text(text)) => {
@@ -439,7 +439,7 @@ async fn start_connections_relay<R: Runtime>(window: Window<R>) -> Result<(), St
                         },
                         Ok(Message::Close(_)) => break,
                         Err(e) => {
-                            error!("WebSocket连接数据读取错误: {}", e);
+                            error!("Ошибка чтения данных WebSocket соединений: {}", e);
                             break;
                         },
                         _ => {}
@@ -447,12 +447,12 @@ async fn start_connections_relay<R: Runtime>(window: Window<R>) -> Result<(), St
                 }
             },
             Err(e) => {
-                error!("WebSocket连接数据连接失败: {}", e);
+                error!("Ошибка подключения WebSocket соединений: {}", e);
             }
         }
     });
     
-    // 启动事件发送任务
+    // Запуск задачи отправки событий
     task::spawn(async move {
         while let Some(data) = rx.recv().await {
             let _ = window_clone.emit("connections-data", data);
@@ -460,4 +460,4 @@ async fn start_connections_relay<R: Runtime>(window: Window<R>) -> Result<(), St
     });
     
     Ok(())
-} 
+}

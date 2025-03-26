@@ -9,7 +9,7 @@ use std::path::Path;
 use tracing::{info, error};
 use base64;
 
-// 下载订阅
+// Загрузка подписки
 #[tauri::command]
 pub async fn download_subscription(url: String) -> Result<(), String> {
     download_and_process_subscription(url)
@@ -19,7 +19,7 @@ pub async fn download_subscription(url: String) -> Result<(), String> {
     Ok(())
 }
 
-// 手动添加订阅内容
+// Ручное добавление содержимого подписки
 #[tauri::command]
 pub async fn add_manual_subscription(content: String) -> Result<(), String> {
     process_subscription_content(content)
@@ -28,76 +28,76 @@ pub async fn add_manual_subscription(content: String) -> Result<(), String> {
     Ok(())
 }
 
-// 获取当前配置文件内容
+// Получение текущего содержимого конфигурационного файла
 #[tauri::command]
 pub fn get_current_config() -> Result<String, String> {
     let config_path = paths::get_config_path();
     
-    // 检查文件是否存在
+    // Проверка существования файла
     if !config_path.exists() {
         return Err(messages::ERR_CONFIG_READ_FAILED.to_string());
     }
     
-    // 读取文件内容
+    // Чтение содержимого файла
     match std::fs::read_to_string(config_path) {
         Ok(content) => Ok(content),
         Err(e) => Err(format!("{}: {}", messages::ERR_CONFIG_READ_FAILED, e)),
     }
 }
 
-// 切换代理模式（global、rule或tun）
+// Переключение режима прокси (global, rule или tun)
 #[tauri::command]
 pub fn toggle_proxy_mode(mode: String) -> Result<String, String> {
-    // 验证模式参数
+    // Проверка параметра режима
     if !["global", "rule", "tun"].contains(&mode.as_str()) {
-        return Err(format!("无效的代理模式: {}", mode));
+        return Err(format!("Недопустимый режим прокси: {}", mode));
     }
     
-    info!("正在切换代理模式为: {}", mode);
+    info!("Переключение режима прокси на: {}", mode);
     
     let work_dir = get_work_dir();
     let path = Path::new(&work_dir).join("sing-box/config.json");
     
-    // 检查文件是否存在
+    // Проверка существования файла
     if !path.exists() {
-        return Err("配置文件不存在，请先添加订阅".to_string());
+        return Err("Конфигурационный файл не существует, сначала добавьте подписку".to_string());
     }
     
-    // 修改配置文件
+    // Изменение конфигурационного файла
     match modify_default_mode(&path, mode.clone()) {
         Ok(_) => {
-            info!("代理模式已切换为: {}", mode);
-            Ok(format!("代理模式已切换为: {}", mode))
+            info!("Режим прокси переключен на: {}", mode);
+            Ok(format!("Режим прокси переключен на: {}", mode))
         },
         Err(e) => {
-            error!("切换代理模式失败: {}", e);
-            Err(format!("切换代理模式失败: {}", e))
+            error!("Не удалось переключить режим прокси: {}", e);
+            Err(format!("Не удалось переключить режим прокси: {}", e))
         }
     }
 }
 
-// 修改配置文件中的default_mode
+// Изменение default_mode в конфигурационном файле
 fn modify_default_mode(config_path: &Path, mode: String) -> Result<(), Box<dyn Error>> {
-    // 读取现有配置
+    // Чтение существующей конфигурации
     let mut json_util = ConfigUtil::new(config_path.to_str().unwrap())?;
     
-    // 我们不使用get_value方法，因为它不存在
-    // 而是直接创建新的配置并修改
+    // Мы не используем метод get_value, так как он не существует
+    // Вместо этого создаем новую конфигурацию и изменяем ее
     let target_keys = vec!["experimental"];
     
-    // 创建新的配置，设置mode
+    // Создание новой конфигурации, установка mode
     let config = Config {
         clash_api: ClashApiConfig {
             external_controller: "127.0.0.1:12081".to_string(),
             external_ui: "metacubexd".to_string(),
             external_ui_download_url: "".to_string(),
-            external_ui_download_detour: "手动切换".to_string(),
-            default_mode: mode, // 设置为传入的模式
+            external_ui_download_detour: "Ручное переключение".to_string(),
+            default_mode: mode, // Установка переданного режима
         },
         cache_file: CacheFileConfig { enabled: true },
     };
     
-    // 更新配置
+    // Обновление конфигурации
     json_util.modify_property(&target_keys, serde_json::to_value(config)?);
     json_util.save()?;
     
@@ -113,33 +113,33 @@ async fn download_and_process_subscription(url: String) -> Result<(), Box<dyn Er
     let response = client.get(url).headers(headers).send().await?;
     let response_text = response.text().await?;
 
-    // 检查内容是否为base64编码，并在需要时进行解码
+    // Проверка, является ли содержимое base64-кодированным, и декодирование при необходимости
     let text = if is_base64_encoded(&response_text) {
-        info!("检测到base64编码内容，正在解码...");
+        info!("Обнаружено base64-кодированное содержимое, декодирование...");
         let decoded = match base64::decode(&response_text.trim()) {
             Ok(data) => data,
             Err(_) => {
-                // 如果标准解码失败，尝试URL安全的base64变体
+                // Если стандартное декодирование не удалось, попытка URL-безопасного варианта base64
                 base64::decode_config(&response_text.trim(), base64::URL_SAFE)
-                    .map_err(|e| format!("Base64解码失败: {}", e))?
+                    .map_err(|e| format!("Ошибка декодирования Base64: {}", e))?
             }
         };
         
-        // 尝试将解码后的内容解析为有效的UTF-8字符串
+        // Попытка преобразования декодированного содержимого в допустимую строку UTF-8
         match String::from_utf8(decoded.clone()) {
             Ok(s) => {
-                // 检查解码后的内容是否是有效的JSON或配置格式
+                // Проверка, является ли декодированное содержимое допустимым JSON или конфигурационным форматом
                 if s.trim_start().starts_with('{') || s.contains("proxies:") {
-                    s // 返回解码后的文本
+                    s // Возвращение декодированного текста
                 } else {
-                    // 解码后的内容不像是有效的配置，可能是误判，使用原始文本
-                    info!("解码后的内容不是有效的配置格式，使用原始内容");
+                    // Декодированное содержимое не похоже на допустимую конфигурацию, возможно, это ошибка, использование исходного текста
+                    info!("Декодированное содержимое не является допустимым конфигурационным форматом, использование исходного содержимого");
                     response_text
                 }
             },
             Err(_) => {
-                // 如果不是有效的UTF-8，返回原始文本
-                info!("解码后的内容不是有效的UTF-8，使用原始内容");
+                // Если это не допустимая строка UTF-8, возвращение исходного текста
+                info!("Декодированное содержимое не является допустимой строкой UTF-8, использование исходного содержимого");
                 response_text
             }
         }
@@ -167,11 +167,11 @@ async fn download_and_process_subscription(url: String) -> Result<(), Box<dyn Er
     json_util.modify_property(&target_keys, serde_json::to_value(config)?);
     json_util.save()?;
 
-    info!("订阅已更新");
+    info!("Подписка обновлена");
     Ok(())
 }
 
-// 处理订阅内容（无论是从URL获取还是手动添加）
+// Обработка содержимого подписки (независимо от того, получено ли оно из URL или добавлено вручную)
 fn process_subscription_content(content: String) -> Result<(), Box<dyn Error>> {
     let work_dir = get_work_dir();
     let path = Path::new(&work_dir).join("sing-box/config.json");
@@ -185,7 +185,7 @@ fn process_subscription_content(content: String) -> Result<(), Box<dyn Error>> {
             external_controller: "127.0.0.1:12081".to_string(),
             external_ui: "metacubexd".to_string(),
             external_ui_download_url: "".to_string(),
-            external_ui_download_detour: "手动切换".to_string(),
+            external_ui_download_detour: "Ручное переключение".to_string(),
             default_mode: "rule".to_string(),
         },
         cache_file: CacheFileConfig { enabled: true },
@@ -193,16 +193,16 @@ fn process_subscription_content(content: String) -> Result<(), Box<dyn Error>> {
     json_util.modify_property(&target_keys, serde_json::to_value(config)?);
     json_util.save()?;
 
-    info!("订阅已更新");
+    info!("Подписка обновлена");
     Ok(())
 }
 
-// 改进base64检测逻辑
+// Улучшенная логика проверки base64
 fn is_base64_encoded(text: &str) -> bool {
-    // 先进行基本字符集检查
+    // Сначала выполняется базовая проверка набора символов
     let is_valid_charset = text.trim().chars().all(|c| 
         c.is_ascii_alphanumeric() || c == '+' || c == '/' || c == '=' || 
-        c == '-' || c == '_' // 支持URL安全变体
+        c == '-' || c == '_' // Поддержка URL-безопасного варианта
     );
     
     if !is_valid_charset {
@@ -211,68 +211,68 @@ fn is_base64_encoded(text: &str) -> bool {
     
     let trimmed = text.trim();
     
-    // 检查长度（标准base64长度应为4的倍数，可能有结尾的'='填充）
+    // Проверка длины (стандартная длина base64 должна быть кратна 4, возможно наличие завершающих '=')
     if trimmed.len() % 4 != 0 && !trimmed.ends_with('=') {
         return false;
     }
     
-    // 避免误判普通文本
+    // Избегание ложных срабатываний для обычного текста
     if trimmed.len() < 8 || trimmed.contains(" ") {
         return false;
     }
     
-    // 尝试解码看是否成功（更准确但性能较低的方法）
+    // Попытка декодирования для проверки успешности (более точный, но менее производительный метод)
     let standard_decode_ok = base64::decode(trimmed).is_ok();
     let url_safe_decode_ok = base64::decode_config(trimmed, base64::URL_SAFE).is_ok();
     
-    // 如果能成功解码，再检查解码后内容是否合理（避免误判）
+    // Если декодирование успешно, проверка, является ли декодированное содержимое разумным (избегание ложных срабатываний)
     if standard_decode_ok || url_safe_decode_ok {
-        // 检查是否为常见订阅格式特征
+        // Проверка на наличие общих признаков формата подписки
         if trimmed.starts_with("ey") || trimmed.starts_with("dm") {
-            return true; // 常见的JSON或YAML base64编码的开头特征
+            return true; // Общие признаки начала base64-кодированного JSON или YAML
         }
     }
     
     false
 }
 
-// 获取当前代理模式
+// Получение текущего режима прокси
 #[tauri::command]
 pub fn get_current_proxy_mode() -> Result<String, String> {
-    info!("正在获取当前代理模式");
+    info!("Получение текущего режима прокси");
     
     let work_dir = get_work_dir();
     let path = Path::new(&work_dir).join("sing-box/config.json");
     
-    // 检查配置文件是否存在
+    // Проверка существования конфигурационного файла
     if !path.exists() {
-        return Ok("rule".to_string()); // 默认返回rule模式
+        return Ok("rule".to_string()); // По умолчанию возвращается режим rule
     }
     
-    // 读取配置文件
+    // Чтение конфигурационного файла
     match read_proxy_mode_from_config(&path) {
         Ok(mode) => {
-            info!("当前代理模式为: {}", mode);
+            info!("Текущий режим прокси: {}", mode);
             Ok(mode)
         },
         Err(e) => {
-            error!("获取代理模式失败: {}", e);
-            Ok("rule".to_string()) // 出错时默认返回rule模式
+            error!("Не удалось получить режим прокси: {}", e);
+            Ok("rule".to_string()) // В случае ошибки по умолчанию возвращается режим rule
         }
     }
 }
 
-// 从配置文件中读取代理模式
+// Чтение режима прокси из конфигурационного файла
 fn read_proxy_mode_from_config(config_path: &Path) -> Result<String, Box<dyn Error>> {
-    // 读取配置文件
+    // Чтение конфигурационного файла
     let mut file = File::open(config_path)?;
     let mut content = String::new();
     file.read_to_string(&mut content)?;
     
-    // 解析JSON
+    // Разбор JSON
     let json: serde_json::Value = serde_json::from_str(&content)?;
     
-    // 尝试读取experimental.clash_api.default_mode
+    // Попытка чтения experimental.clash_api.default_mode
     if let Some(experimental) = json.get("experimental") {
         if let Some(clash_api) = experimental.get("clash_api") {
             if let Some(default_mode) = clash_api.get("default_mode") {
@@ -283,6 +283,6 @@ fn read_proxy_mode_from_config(config_path: &Path) -> Result<String, Box<dyn Err
         }
     }
     
-    // 如果找不到，返回默认的rule模式
+    // Если не найдено, возвращается режим rule по умолчанию
     Ok("rule".to_string())
-} 
+}

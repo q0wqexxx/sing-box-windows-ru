@@ -9,14 +9,14 @@ import { listen } from '@tauri-apps/api/event'
 import mitt from '@/utils/mitt'
 import { useRouter, Router } from 'vue-router'
 
-// 定义更新信息类型
+// Определение типа информации об обновлении
 interface UpdateInfo {
   latest_version: string
   download_url: string
   has_update: boolean
 }
 
-// 窗口状态类型
+// Тип состояния окна
 export interface WindowState {
   isVisible: boolean
   isFullscreen: boolean
@@ -26,57 +26,57 @@ export interface WindowState {
 export const useAppStore = defineStore(
   'app',
   () => {
-    // 应用运行状态
+    // Состояние работы приложения
     const isRunning = ref(false)
 
-    // 托盘实例ID - 由TrayStore使用
+    // ID экземпляра трея - используется TrayStore
     const trayInstanceId = ref<string | null>(null)
 
-    // 代理模式
+    // Режим прокси
     const proxyMode = ref<'system' | 'tun'>('system')
 
-    // 自动启动设置
+    // Настройки автозапуска
     const autoStartApp = ref(false)
     const autoStartKernel = ref(false)
 
-    // IP版本设置
+    // Настройки версии IP
     const preferIpv6 = ref(false)
 
-    // 添加版本号状态
+    // Состояние версии приложения
     const appVersion = ref('')
 
-    // 更新相关状态
+    // Состояние обновлений
     const hasUpdate = ref(false)
     const latestVersion = ref('')
     const downloadUrl = ref('')
 
-    // 窗口状态
+    // Состояние окна
     const windowState = ref<WindowState>({
       isVisible: true,
       isFullscreen: false,
       lastVisiblePath: '/',
     })
 
-    // 主题相关状态
+    // Состояние темы
     const osTheme = useOsTheme()
     const isDark = ref(osTheme.value === 'dark')
     const theme = computed(() => (isDark.value ? darkTheme : null))
 
-    // 主题切换
+    // Переключение темы
     const toggleTheme = () => {
       isDark.value = !isDark.value
     }
 
-    // 获取应用版本
+    // Получение версии приложения
     const fetchAppVersion = async () => {
       try {
         appVersion.value = await getVersion()
       } catch (error) {
-        console.error('获取应用版本失败:', error)
+        console.error('Не удалось получить версию приложения:', error)
       }
     }
 
-    // 检查更新
+    // Проверка обновлений
     const checkUpdate = async (silent: boolean = false): Promise<UpdateInfo | null> => {
       try {
         const updateInfo = await tauriApi.update.checkUpdate(appVersion.value)
@@ -86,7 +86,7 @@ export const useAppStore = defineStore(
           latestVersion.value = updateInfo.latest_version
           downloadUrl.value = updateInfo.download_url
 
-          // 只有在非静默模式下才通知
+          // Уведомление только в не тихом режиме
           if (!silent) {
             mitt.emit('update-available', updateInfo)
           }
@@ -96,115 +96,115 @@ export const useAppStore = defineStore(
 
         return null
       } catch (error) {
-        console.error('检查更新失败:', error)
+        console.error('Не удалось проверить обновления:', error)
         return null
       }
     }
 
-    // 下载并安装更新
+    // Загрузка и установка обновлений
     const downloadAndInstallUpdate = async () => {
       if (!hasUpdate.value || !downloadUrl.value) return false
 
       try {
-        // 通知下载开始
+        // Уведомление о начале загрузки
         mitt.emit('download-progress', {
           status: 'checking',
           progress: 0,
-          message: '准备下载更新...',
+          message: 'Подготовка к загрузке обновления...',
         })
 
-        // 开始下载和安装
+        // Начало загрузки и установки
         const result = await tauriApi.update.downloadAndInstallUpdate(downloadUrl.value)
         return result
       } catch (error) {
-        console.error('下载更新失败:', error)
+        console.error('Не удалось загрузить обновление:', error)
         return false
       }
     }
 
-    // 应用运行状态变更
+    // Изменение состояния работы приложения
     const setRunningState = (state: boolean) => {
       if (isRunning.value !== state) {
         isRunning.value = state
-        // 发送进程状态变更事件
+        // Отправка события изменения состояния процесса
         mitt.emit('process-status')
       }
     }
 
-    // 代理模式切换
+    // Переключение режима прокси
     const switchProxyMode = async (targetMode: 'system' | 'tun') => {
-      // 如果当前模式与目标模式相同，则不需要切换
+      // Если текущий режим совпадает с целевым, переключение не требуется
       if (proxyMode.value === targetMode) return
 
-      // 根据模式调用对应服务
+      // Вызов соответствующего сервиса в зависимости от режима
       try {
         if (targetMode === 'system') {
           await tauriApi.proxy.setSystemProxy()
         } else {
-          // TUN模式可能需要管理员权限，检查并处理
+          // Режим TUN может требовать прав администратора, проверка и обработка
           const isAdmin = await tauriApi.proxy.checkAdmin()
           if (!isAdmin) {
-            // 需要管理员权限，实现重启
+            // Требуются права администратора, перезапуск
             await tauriApi.proxy.restartAsAdmin()
             return
           }
           await tauriApi.proxy.setTunProxy()
         }
 
-        // 切换成功后更新状态
+        // Обновление состояния после успешного переключения
         proxyMode.value = targetMode
 
-        // 发出代理模式变更事件，通知其他组件
+        // Отправка события изменения режима прокси, уведомление других компонентов
         mitt.emit('proxy-mode-changed')
       } catch (error) {
-        console.error('切换代理模式失败:', error)
+        console.error('Не удалось переключить режим прокси:', error)
         throw error
       }
     }
 
-    // 获取应用窗口
+    // Получение текущего окна приложения
     const getAppWindow = () => Window.getCurrent()
 
-    // 最小化窗口
+    // Минимизация окна
     const minimizeWindow = async () => {
       const appWindow = getAppWindow()
       await appWindow.minimize()
-      // 触发最小化事件
+      // Отправка события минимизации
       mitt.emit('window-minimize')
     }
 
-    // 隐藏窗口
+    // Скрытие окна
     const hideWindow = async () => {
       const appWindow = getAppWindow()
       await appWindow.hide()
       windowState.value.isVisible = false
-      // 触发隐藏事件
+      // Отправка события скрытия
       mitt.emit('window-hide')
     }
 
-    // 显示窗口
+    // Показ окна
     const showWindow = async () => {
       const appWindow = getAppWindow()
       await appWindow.show()
       await appWindow.setFocus()
       windowState.value.isVisible = true
-      // 触发显示事件
+      // Отправка события показа
       mitt.emit('window-show')
     }
 
-    // 设置窗口置顶
+    // Установка окна поверх всех окон
     const setWindowAlwaysOnTop = async () => {
       const appWindow = getAppWindow()
       await appWindow.setAlwaysOnTop(true)
     }
 
-    // 获取窗口可见状态
+    // Получение видимости окна
     const getWindowVisible = async () => {
       const appWindow = getAppWindow()
       return await appWindow.isVisible()
     }
 
-    // 切换全屏模式
+    // Переключение полноэкранного режима
     const toggleFullScreen = async () => {
       const appWindow = getAppWindow()
       const isFullscreen = await appWindow.isFullscreen()
@@ -218,7 +218,7 @@ export const useAppStore = defineStore(
       windowState.value.isFullscreen = !isFullscreen
     }
 
-    // 保存路由状态并切换到空白页
+    // Сохранение состояния маршрута и переход на пустую страницу
     const saveRouteAndGoBlank = (router: Router) => {
       windowState.value.lastVisiblePath = router.currentRoute.value.path
       if (windowState.value.lastVisiblePath !== '/blank') {
@@ -226,31 +226,31 @@ export const useAppStore = defineStore(
       }
     }
 
-    // 从空白页恢复到上次的路由
+    // Восстановление маршрута с пустой страницы
     const restoreFromBlank = (router: Router) => {
       if (router.currentRoute.value.path === '/blank' && windowState.value.lastVisiblePath) {
         router.push(windowState.value.lastVisiblePath)
       }
     }
 
-    // 设置窗口事件处理器
+    // Настройка обработчиков событий окна
     const setupWindowEventHandlers = (router: Router) => {
-      // 窗口隐藏时切换到空白页
+      // Переключение на пустую страницу при скрытии окна
       mitt.on('window-hide', () => {
         saveRouteAndGoBlank(router)
       })
 
-      // 窗口显示时恢复路由
+      // Восстановление маршрута при показе окна
       mitt.on('window-show', () => {
         restoreFromBlank(router)
       })
 
-      // 窗口恢复时恢复路由
+      // Восстановление маршрута при восстановлении окна
       mitt.on('window-restore', () => {
         restoreFromBlank(router)
       })
 
-      // 检查当前窗口状态
+      // Проверка текущего состояния окна
       getAppWindow()
         .isVisible()
         .then((visible) => {
@@ -261,7 +261,7 @@ export const useAppStore = defineStore(
         })
     }
 
-    // 清理窗口事件监听
+    // Очистка событий окна
     const cleanupWindowEvents = () => {
       mitt.off('window-minimize')
       mitt.off('window-hide')
@@ -279,35 +279,35 @@ export const useAppStore = defineStore(
       switchProxyMode,
       appVersion,
       fetchAppVersion,
-      // 导出更新相关方法和状态
+      // Экспорт методов и состояния обновлений
       hasUpdate,
       latestVersion,
       downloadUrl,
       checkUpdate,
       downloadAndInstallUpdate,
-      // 导出主题相关状态和方法
+      // Экспорт состояния и методов темы
       isDark,
       theme,
       toggleTheme,
-      // 窗口状态
+      // Состояние окна
       windowState,
-      // 窗口操作
+      // Операции с окном
       minimizeWindow,
       hideWindow,
       showWindow,
       toggleFullScreen,
       getWindowVisible,
       setWindowAlwaysOnTop,
-      // 窗口事件处理
+      // Обработка событий окна
       saveRouteAndGoBlank,
       restoreFromBlank,
       setupWindowEventHandlers,
       cleanupWindowEvents,
-      // 运行状态更新
+      // Обновление состояния работы
       setRunningState,
     }
   },
   {
-    persist: true, // 使用默认的持久化配置
+    persist: true, // Использование конфигурации по умолчанию для сохранения состояния
   },
 )

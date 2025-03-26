@@ -1,6 +1,6 @@
 <template>
   <div class="setting-container">
-    <!-- 内核管理卡片 -->
+    <!-- Карточка управления ядром -->
     <n-card class="setting-card" :bordered="false">
       <template #header-extra>
         <n-space align="center" :size="12">
@@ -11,10 +11,10 @@
             size="medium"
             class="version-tag"
           >
-            当前版本：{{ infoStore.version.version }}
+            Текущая версия: {{ infoStore.version.version }}
           </n-tag>
           <n-tag v-else :bordered="false" type="error" size="medium" class="version-tag">
-            未安装内核
+            Ядро не установлено
           </n-tag>
           <n-tag
             v-if="hasNewVersion"
@@ -23,7 +23,7 @@
             size="medium"
             class="version-tag"
           >
-            新版本：{{ infoStore.newVersion }}
+            Новая версия: {{ infoStore.newVersion }}
           </n-tag>
         </n-space>
       </template>
@@ -33,7 +33,7 @@
             <n-icon size="24" class="card-icon">
               <settings-outline />
             </n-icon>
-            内核管理
+            Управление ядром
           </n-h3>
         </div>
       </template>
@@ -43,20 +43,20 @@
           v-if="hasNewVersion"
           type="warning"
           :show-icon="true"
-          title="发现新版本"
+          title="Обнаружена новая версия"
           class="version-alert"
         >
-          有新版本的内核可供下载，建议更新以获得更好的体验。
+          Доступна новая версия ядра. Рекомендуется обновить для улучшения работы.
         </n-alert>
 
         <n-alert
           v-if="!infoStore.version.version"
           type="error"
           :show-icon="true"
-          title="未安装内核"
+          title="Ядро не установлено"
           class="version-alert"
         >
-          请下载并安装内核后使用。
+          Пожалуйста, скачайте и установите ядро перед использованием.
         </n-alert>
 
         <n-progress
@@ -87,10 +87,10 @@
             </template>
             {{
               hasNewVersion
-                ? '下载新版本'
+                ? 'Скачать новую версию'
                 : infoStore.version.version
-                  ? '重新下载当前版本'
-                  : '下载内核'
+                  ? 'Скачать текущую версию'
+                  : 'Скачать ядро'
             }}
           </n-button>
 
@@ -102,22 +102,22 @@
               :disabled="downloading"
               class="action-button"
             >
-              手动下载
+              Скачивание вручную
             </n-button>
             <n-button text size="medium" @click="checkManualInstall" :disabled="downloading">
-              检查安装
+              Проверить установку
             </n-button>
           </n-space>
         </n-space>
 
         <n-alert v-if="downloadError" type="error" :show-icon="true" style="margin-top: 16px">
-          <template #header> 下载失败 </template>
+          <template #header> Скачивание не удалось </template>
           <div style="white-space: pre-line">{{ downloadError }}</div>
         </n-alert>
       </n-space>
     </n-card>
 
-    <!-- 启动设置卡片 -->
+    <!-- Карточка настроек запуска -->
     <n-card class="setting-card" :bordered="false">
       <template #header>
         <div class="card-header">
@@ -125,7 +125,7 @@
             <n-icon size="20" class="card-icon">
               <power-outline />
             </n-icon>
-            启动设置
+            Настройки запуска
           </n-h3>
         </div>
       </template>
@@ -134,14 +134,14 @@
         <n-list-item>
           <n-space justify="space-between" align="center" style="width: 100%">
             <div class="setting-item">
-              <div class="setting-title">开机自启动</div>
+              <div class="setting-title">Автозапуск при включении</div>
               <div class="setting-desc">
-                {{ appStore.autoStartApp ? '应用将在系统启动时自动运行' : '应用需要手动启动' }}
+                {{ appStore.autoStartApp ? 'Приложение будет автоматически запускаться при включении системы' : 'Приложение нужно запускать вручную' }}
               </div>
             </div>
             <n-switch v-model:value="appStore.autoStartApp" @update-value="onAutoStartChange">
-              <template #checked>开</template>
-              <template #unchecked>关</template>
+              <template #checked>Вкл</template>
+              <template #unchecked>Выкл</template>
             </n-switch>
           </n-space>
         </n-list-item>
@@ -149,14 +149,14 @@
         <n-list-item>
           <n-space justify="space-between" align="center" style="width: 100%">
             <div class="setting-item">
-              <div class="setting-title">自动启动内核</div>
+              <div class="setting-title">Автозапуск ядра</div>
               <div class="setting-desc">
-                {{ appStore.autoStartKernel ? '应用启动时将自动启动内核' : '需要手动启动内核' }}
+                {{ appStore.autoStartKernel ? 'Ядро будет автоматически запускаться при запуске приложения' : 'Ядро нужно запускать вручную' }}
               </div>
             </div>
             <n-switch v-model:value="appStore.autoStartKernel">
-              <template #checked>开启</template>
-              <template #unchecked>关闭</template>
+              <template #checked>Вкл</template>
+              <template #unchecked>Выкл</template>
             </n-switch>
           </n-space>
         </n-list-item>
@@ -164,21 +164,21 @@
         <n-list-item>
           <n-space justify="space-between" align="center" style="width: 100%">
             <div class="setting-item">
-              <div class="setting-title">IPv6优先</div>
+              <div class="setting-title">Предпочитать IPv6</div>
               <div class="setting-desc">
-                {{ appStore.preferIpv6 ? '优先使用IPv6连接' : '仅使用IPv4连接' }}
+                {{ appStore.preferIpv6 ? 'Предпочитать использование IPv6 соединений' : 'Использовать только IPv4 соединения' }}
               </div>
             </div>
             <n-switch v-model:value="appStore.preferIpv6" @update-value="onIpVersionChange">
-              <template #checked>开启</template>
-              <template #unchecked>关闭</template>
+              <template #checked>Вкл</template>
+              <template #unchecked>Выкл</template>
             </n-switch>
           </n-space>
         </n-list-item>
       </n-list>
     </n-card>
 
-    <!-- 关于卡片 -->
+    <!-- Карточка "О программе" -->
     <n-card class="setting-card" :bordered="false">
       <template #header>
         <div class="card-header">
@@ -186,7 +186,7 @@
             <n-icon size="20" class="card-icon">
               <information-circle-outline />
             </n-icon>
-            关于
+            О программе
           </n-h3>
         </div>
       </template>
@@ -194,33 +194,33 @@
       <n-grid :cols="2" :x-gap="12" :y-gap="8">
         <n-gi>
           <div class="about-item">
-            <span class="about-label">应用版本</span>
+            <span class="about-label">Версия приложения</span>
             <n-space align="center">
               <span class="about-value">{{ appStore.appVersion }}</span>
               <n-button text size="tiny" @click="handleCheckUpdate" :loading="checkingUpdate">
                 <template #icon>
                   <n-icon><refresh-outline /></n-icon>
                 </template>
-                检查更新
+                Проверить обновления
               </n-button>
             </n-space>
           </div>
         </n-gi>
         <n-gi>
           <div class="about-item">
-            <span class="about-label">内核版本</span>
+            <span class="about-label">Версия ядра</span>
             <span class="about-value">{{ infoStore.version.version }}</span>
           </div>
         </n-gi>
         <n-gi>
           <div class="about-item">
-            <span class="about-label">系统</span>
+            <span class="about-label">Система</span>
             <span class="about-value">Windows</span>
           </div>
         </n-gi>
         <n-gi>
           <div class="about-item">
-            <span class="about-label">开源协议</span>
+            <span class="about-label">Лицензия</span>
             <span class="about-value">MIT License</span>
           </div>
         </n-gi>
@@ -249,14 +249,14 @@
             <template #icon>
               <n-icon><globe-outline /></n-icon>
             </template>
-            官网
+            Веб-сайт
           </n-button>
         </n-space>
       </div>
     </n-card>
   </div>
 
-  <!-- 应用更新对话框 -->
+  <!-- Диалог обновления приложения -->
   <update-modal
     v-model:show="showUpdateModal"
     :latest-version="latestVersion"
@@ -296,20 +296,20 @@ const downloading = ref(false)
 const downloadProgress = ref(0)
 const downloadMessage = ref('')
 
-// 更新相关状态
+// Состояние обновления
 const showUpdateModal = ref(false)
 const latestVersion = ref('')
 const downloadUrl = ref('')
 const skipUpdateFlag = ref(false)
 
-// 检查更新状态
+// Проверка состояния обновления
 const checkingUpdate = ref(false)
 
-// 新增状态
+// Новое состояние
 const downloadError = ref<string | null>(null)
 const appDataPath = ref('')
 
-// 检查更新
+// Проверка обновлений
 const checkUpdate = async () => {
   try {
     if (skipUpdateFlag.value) return
@@ -321,26 +321,26 @@ const checkUpdate = async () => {
       downloadUrl.value = result.download_url
     }
   } catch (error) {
-    console.error('检查更新失败:', error)
+    console.error('Проверка обновлений не удалась:', error)
   }
 }
 
-// 处理更新
+// Обработка обновления
 const handleUpdate = async () => {
   try {
     await tauriApi.update.downloadAndInstallUpdate(downloadUrl.value)
   } catch (error) {
-    message.error('更新失败: ' + error)
+    message.error('Обновление не удалось: ' + error)
   }
 }
 
-// 跳过更新
+// Пропуск обновления
 const skipUpdate = () => {
   showUpdateModal.value = false
   skipUpdateFlag.value = true
 }
 
-// 手动检查更新
+// Ручная проверка обновлений
 const handleCheckUpdate = async () => {
   try {
     checkingUpdate.value = true
@@ -349,12 +349,12 @@ const handleCheckUpdate = async () => {
       showUpdateModal.value = true
       latestVersion.value = result.latest_version
       downloadUrl.value = result.download_url
-      message.success(`发现新版本：${result.latest_version}`)
+      message.success(`Обнаружена новая версия: ${result.latest_version}`)
     } else {
-      message.info('当前已是最新版本')
+      message.info('Установлена последняя версия')
     }
   } catch (error) {
-    message.error(`检查更新失败: ${error}`)
+    message.error(`Проверка обновлений не удалась: ${error}`)
   } finally {
     checkingUpdate.value = false
   }
@@ -370,12 +370,12 @@ const downloadTheKernel = async () => {
     loading.value = true
     downloading.value = true
     downloadProgress.value = 0
-    downloadMessage.value = '准备下载...'
+    downloadMessage.value = 'Подготовка к скачиванию...'
     downloadError.value = null
 
     await tauriApi.subscription.downloadLatestKernel()
 
-    // 下载成功后更新版本信息
+    // Обновление информации о версии после успешного скачивания
     await infoStore.updateVersion()
   } catch (error) {
     downloadError.value = error as string
@@ -386,19 +386,19 @@ const downloadTheKernel = async () => {
   }
 }
 
-// 开机自启动设置
+// Настройка автозапуска при включении
 const onAutoStartChange = async (value: boolean) => {
   try {
     if (value) {
       await enable()
-      message.success('已设置开机启动')
+      message.success('Автозапуск при включении включен')
     } else {
       await disable()
-      message.success('已关闭开机启动')
+      message.success('Автозапуск при включении отключен')
     }
   } catch (error) {
-    message.error(`设置失败: ${error}`)
-    // 恢复原来的设置
+    message.error(`Настройка не удалась: ${error}`)
+    // Восстановление предыдущей настройки
     appStore.autoStartApp = !value
   }
 }
@@ -406,59 +406,59 @@ const onAutoStartChange = async (value: boolean) => {
 const onIpVersionChange = async (value: boolean) => {
   try {
     await tauriApi.proxy.toggleIpVersion(value)
-    // 切换后重启内核
+    // Перезапуск ядра после переключения
     if (appStore.isRunning) {
       await tauriApi.kernel.restartKernel()
     }
   } catch (error: unknown) {
-    message.error(`设置失败: ${error instanceof Error ? error.message : String(error)}`)
-    // 回滚状态
+    message.error(`Настройка не удалась: ${error instanceof Error ? error.message : String(error)}`)
+    // Откат состояния
     appStore.preferIpv6 = !value
   }
 }
 
-// 显示手动下载指引
+// Показать инструкцию по ручному скачиванию
 const showManualDownloadModal = () => {
   dialog.info({
-    title: '手动下载说明',
-    content: `请按照以下步骤操作：
-1. 访问 https://github.com/SagerNet/sing-box/releases/latest
-2. 下载对应系统版本的 sing-box
-3. 将解压后的 sing-box.exe 放置在以下目录：
-用户目录/AppData/Local/sing-box-windows/sing-box/
+    title: 'Инструкция по ручному скачиванию',
+    content: `Пожалуйста, выполните следующие шаги:
+1. Перейдите по ссылке https://github.com/SagerNet/sing-box/releases/latest
+2. Скачайте версию sing-box для вашей системы
+3. Поместите распакованный файл sing-box.exe в следующую директорию:
+Пользовательская директория/AppData/Local/sing-box-windows/sing-box/
 
-完成后点击"检查安装"按钮验证安装是否成功。`,
-    positiveText: '我知道了',
+После завершения нажмите кнопку "Проверить установку" для проверки успешности установки.`,
+    positiveText: 'Понятно',
   })
 }
 
-// 检查手动安装
+// Проверка ручной установки
 const checkManualInstall = async () => {
   try {
     loading.value = true
     const success = await infoStore.checkKernelVersion()
     if (success) {
-      message.success('内核安装验证成功！')
+      message.success('Проверка установки ядра успешна!')
     } else {
-      message.error('未检测到有效的内核文件')
+      message.error('Не удалось обнаружить действительный файл ядра')
     }
   } catch (error) {
-    message.error(`检查失败: ${error}`)
+    message.error(`Проверка не удалась: ${error}`)
   } finally {
     loading.value = false
   }
 }
 
-// 获取应用数据目录
+// Получение директории данных приложения
 const getAppDataPath = async () => {
   try {
     appDataPath.value = await appDataDir()
   } catch (error) {
-    console.error('获取应用数据目录失败:', error)
+    console.error('Не удалось получить директорию данных приложения:', error)
   }
 }
 
-// 监听下载进度事件
+// Слушатель событий прогресса скачивания
 listen(
   'download-progress',
   (event: { payload: { status: string; progress: number; message: string } }) => {
@@ -469,21 +469,21 @@ listen(
     if (status === 'completed') {
       downloading.value = false
       downloadError.value = null
-      message.success('内核下载完成！')
-      // 更新版本信息
+      message.success('Скачивание ядра завершено!')
+      // Обновление информации о версии
       infoStore.updateVersion()
     }
   },
 )
 
 onMounted(async () => {
-  // 获取当前版本号
+  // Получение текущей версии
   await appStore.fetchAppVersion()
-  // 检查更新
+  // Проверка обновлений
   await checkUpdate()
-  // 获取应用数据目录
+  // Получение директории данных приложения
   await getAppDataPath()
-  // 获取内核版本信息
+  // Обновление информации о версии ядра
   await infoStore.updateVersion()
 })
 </script>

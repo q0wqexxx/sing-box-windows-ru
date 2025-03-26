@@ -1,4 +1,4 @@
-// 定义 WebSocket 消息类型
+// Определение типов сообщений WebSocket
 interface WSTrafficData {
   up: number
   down: number
@@ -23,7 +23,7 @@ export const createWebSocket = (
   onClose?: () => void,
 ) => {
   if (typeof WebSocket === 'undefined') {
-    alert('您的浏览器不支持socket')
+    alert('Ваш браузер не поддерживает WebSocket')
     return
   }
 
@@ -34,13 +34,13 @@ export const createWebSocket = (
     ws = new WebSocket(url)
 
     ws.onerror = () => {
-      console.log('ws连接发生错误')
+      console.log('Ошибка подключения WebSocket')
       onClose?.()
       scheduleReconnect()
     }
 
     ws.onopen = () => {
-      console.log('ws连接成功')
+      console.log('Подключение WebSocket успешно')
       if (reconnectTimer) {
         window.clearTimeout(reconnectTimer)
         reconnectTimer = null
@@ -52,12 +52,12 @@ export const createWebSocket = (
         const data = JSON.parse(event.data) as WSData
         onMessage(data)
       } catch (error) {
-        console.error('解析消息失败:', error)
+        console.error('Ошибка разбора сообщения:', error)
       }
     }
 
     ws.onclose = () => {
-      console.log('ws连接关闭')
+      console.log('Подключение WebSocket закрыто')
       onClose?.()
       scheduleReconnect()
     }
@@ -66,15 +66,15 @@ export const createWebSocket = (
   const scheduleReconnect = () => {
     if (!reconnectTimer) {
       reconnectTimer = window.setTimeout(() => {
-        console.log('尝试重新连接...')
+        console.log('Попытка переподключения...')
         connect()
-      }, 3000) // 3秒后重连
+      }, 3000) // Переподключение через 3 секунды
     }
   }
 
   connect()
 
-  // 返回清理函数
+  // Возвращаем функцию очистки
   return () => {
     if (ws) {
       ws.close()
@@ -87,11 +87,11 @@ export const createWebSocket = (
 
 export function formatBandwidth(kbps: number) {
   kbps = kbps / 1024
-  // 计算 MB/s 和 GB/s
-  const mbps = kbps / 1024 // 将 KB/s 转为 MB/s
-  const gbps = mbps / 1024 // 将 MB/s 转为 GB/s
+  // Рассчитываем MB/s и GB/s
+  const mbps = kbps / 1024 // Преобразование KB/s в MB/s
+  const gbps = mbps / 1024 // Преобразование MB/s в GB/s
 
-  // 选择最佳单位
+  // Выбираем наилучшую единицу измерения
   let formattedBandwidth
   if (gbps >= 1) {
     formattedBandwidth = `${gbps.toFixed(2)} GB`
@@ -101,6 +101,6 @@ export function formatBandwidth(kbps: number) {
     formattedBandwidth = `${kbps.toFixed(2)} KB`
   }
 
-  // 格式化输出，保持小数点后两位
+  // Форматируем вывод, оставляя две цифры после запятой
   return formattedBandwidth
 }

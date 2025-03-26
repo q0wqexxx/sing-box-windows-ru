@@ -4,7 +4,7 @@
     :mask-closable="false"
     class="update-modal"
     preset="card"
-    title="发现新版本"
+    title="Обнаружена новая версия"
     size="small"
     :bordered="false"
     :segmented="true"
@@ -17,11 +17,11 @@
           <n-icon size="24" color="var(--primary-color)" class="update-icon">
             <download-outline />
           </n-icon>
-          <span>新版本 {{ latestVersion }} 已发布</span>
+          <span>Новая версия {{ latestVersion }} выпущена</span>
         </div>
         <div class="update-description">
-          <p>是否立即更新？</p>
-          <p class="current-version">当前版本：{{ currentVersion }}</p>
+          <p>Хотите обновить сейчас?</p>
+          <p class="current-version">Текущая версия: {{ currentVersion }}</p>
         </div>
       </div>
 
@@ -39,7 +39,7 @@
 
       <n-space justify="end" :size="16">
         <n-button size="medium" @click="onCancel" :disabled="isUpdating" class="update-button">
-          下次再说
+          Напомнить позже
         </n-button>
         <n-button
           type="primary"
@@ -49,7 +49,7 @@
           @click="onUpdate"
           class="update-button"
         >
-          {{ isUpdating ? '正在下载更新' : '立即更新' }}
+          {{ isUpdating ? 'Загрузка обновления' : 'Обновить сейчас' }}
         </n-button>
       </n-space>
     </n-space>

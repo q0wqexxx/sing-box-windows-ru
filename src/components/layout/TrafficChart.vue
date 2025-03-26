@@ -4,11 +4,11 @@
     <div class="chart-labels">
       <div class="legend-item upload">
         <div class="legend-color"></div>
-        <span>上传速度</span>
+        <span>Скорость загрузки</span>
       </div>
       <div class="legend-item download">
         <div class="legend-color"></div>
-        <span>下载速度</span>
+        <span>Скорость скачивания</span>
       </div>
     </div>
   </div>
@@ -17,7 +17,7 @@
 <script lang="ts" setup>
 import { ref, defineProps, onMounted, onUnmounted, watch, computed } from 'vue'
 import { useThemeVars } from 'naive-ui'
-import { formatBandwidth } from '@/utils/index' // 导入formatBandwidth函数
+import { formatBandwidth } from '@/utils/index' // Импорт функции formatBandwidth
 
 defineOptions({
   name: 'TrafficChart',
@@ -38,20 +38,20 @@ const chartContainer = ref<HTMLDivElement | null>(null)
 const chartCanvas = ref<HTMLCanvasElement | null>(null)
 const themeVars = useThemeVars()
 
-// 图表配置
-const MAX_DATA_POINTS = 60 // 最大数据点数量
-const uploadData = ref<number[]>([]) // 上传速度数据
-const downloadData = ref<number[]>([]) // 下载速度数据
-const timeLabels = ref<string[]>([]) // 时间标签
+// Конфигурация графика
+const MAX_DATA_POINTS = 60 // Максимальное количество точек данных
+const uploadData = ref<number[]>([]) // Данные скорости загрузки
+const downloadData = ref<number[]>([]) // Данные скорости скачивания
+const timeLabels = ref<string[]>([]) // Метки времени
 
-// 计算最大值
+// Вычисление максимального значения
 const maxValue = computed(() => {
   const uploadMax = Math.max(...uploadData.value, 0.1)
   const downloadMax = Math.max(...downloadData.value, 0.1)
-  return Math.max(uploadMax, downloadMax) * 1.2 // 留出20%的空间
+  return Math.max(uploadMax, downloadMax) * 1.2 // Оставить 20% пространства
 })
 
-// 初始化图表
+// Инициализация графика
 const initChart = () => {
   if (!chartCanvas.value || !chartContainer.value) return
 
@@ -59,23 +59,23 @@ const initChart = () => {
   const container = chartContainer.value
   const { width, height } = container.getBoundingClientRect()
 
-  // 设置canvas大小，考虑设备像素比以保持清晰度
+  // Установка размера canvas, учитывая плотность пикселей устройства для сохранения четкости
   const dpr = window.devicePixelRatio || 1
   canvas.width = width * dpr
   canvas.height = height * dpr
   canvas.style.width = `${width}px`
   canvas.style.height = `${height}px`
 
-  // 初始清空数据数组
+  // Инициализация массивов данных
   uploadData.value = Array(MAX_DATA_POINTS).fill(0)
   downloadData.value = Array(MAX_DATA_POINTS).fill(0)
   timeLabels.value = Array(MAX_DATA_POINTS).fill('')
 
-  // 立即绘制空图表
+  // Немедленное рисование пустого графика
   drawChart()
 }
 
-// 绘制图表
+// Рисование графика
 const drawChart = () => {
   if (!chartCanvas.value) return
 
@@ -86,41 +86,41 @@ const drawChart = () => {
   const dpr = window.devicePixelRatio || 1
   const width = canvas.width
   const height = canvas.height
-  const padding = { top: 30 * dpr, right: 20 * dpr, bottom: 40 * dpr, left: 80 * dpr } // 增加左侧padding
+  const padding = { top: 30 * dpr, right: 20 * dpr, bottom: 40 * dpr, left: 80 * dpr } // Увеличение отступа слева
 
-  // 清除画布
+  // Очистка холста
   ctx.clearRect(0, 0, width, height)
 
-  // 绘制区域
+  // Область рисования
   const chartWidth = width - padding.left - padding.right
   const chartHeight = height - padding.top - padding.bottom
 
-  // 获取当前主题颜色
+  // Получение текущих цветов темы
   const bgColor = themeVars.value.bodyColor
   const textColor = themeVars.value.textColor2
   const gridColor = themeVars.value.borderColor
-  const uploadColor = '#18A058' // 绿色
-  const downloadColor = '#2080F0' // 蓝色
+  const uploadColor = '#18A058' // Зеленый
+  const downloadColor = '#2080F0' // Синий
 
-  // 设置字体
+  // Установка шрифта
   ctx.font = `${12 * dpr}px sans-serif`
   ctx.textAlign = 'right'
   ctx.textBaseline = 'middle'
   ctx.fillStyle = textColor
 
-  // 绘制Y轴标签和网格线
+  // Рисование меток и сетки по оси Y
   const yAxisSteps = 5
   for (let i = 0; i <= yAxisSteps; i++) {
     const y = padding.top + chartHeight - (i / yAxisSteps) * chartHeight
     const value = (i / yAxisSteps) * maxValue.value
 
-    // 将值从B/s转换为适当单位的字符串（传入参数需要转换为KB）
-    const formattedValue = formatBandwidth(value * 1024 * 1024) // 转换为KB后传给formatBandwidth
+    // Преобразование значения в строку с подходящей единицей измерения (передача параметра в КБ)
+    const formattedValue = formatBandwidth(value * 1024 * 1024) // Преобразование в КБ перед передачей в formatBandwidth
 
-    // 添加"/s"表示速率单位
+    // Добавление "/s" для обозначения единицы скорости
     const speedLabel = `${formattedValue}/s`
 
-    // 绘制网格线
+    // Рисование сетки
     ctx.beginPath()
     ctx.strokeStyle = gridColor
     ctx.lineWidth = 1
@@ -128,11 +128,11 @@ const drawChart = () => {
     ctx.lineTo(padding.left + chartWidth, y)
     ctx.stroke()
 
-    // 绘制Y轴标签
+    // Рисование меток по оси Y
     ctx.fillText(speedLabel, padding.left - 10 * dpr, y)
   }
 
-  // 绘制X轴
+  // Рисование оси X
   ctx.beginPath()
   ctx.strokeStyle = gridColor
   ctx.lineWidth = 1
@@ -140,8 +140,8 @@ const drawChart = () => {
   ctx.lineTo(padding.left + chartWidth, padding.top + chartHeight)
   ctx.stroke()
 
-  // 绘制X轴标签（只显示部分时间点以避免拥挤）
-  const labelInterval = Math.ceil(MAX_DATA_POINTS / 6) // 显示约6个标签
+  // Рисование меток по оси X (отображение только части меток времени для избежания перегруженности)
+  const labelInterval = Math.ceil(MAX_DATA_POINTS / 6) // Отображение около 6 меток
   for (let i = 0; i < MAX_DATA_POINTS; i += labelInterval) {
     if (timeLabels.value[i]) {
       const x = padding.left + (i / (MAX_DATA_POINTS - 1)) * chartWidth
@@ -150,18 +150,18 @@ const drawChart = () => {
     }
   }
 
-  // 绘制上传速度曲线
+  // Рисование кривой скорости загрузки
   if (uploadData.value.some((v) => v > 0)) {
     drawCurve(ctx, uploadData.value, uploadColor, padding, chartWidth, chartHeight, dpr)
   }
 
-  // 绘制下载速度曲线
+  // Рисование кривой скорости скачивания
   if (downloadData.value.some((v) => v > 0)) {
     drawCurve(ctx, downloadData.value, downloadColor, padding, chartWidth, chartHeight, dpr)
   }
 }
 
-// 绘制曲线函数
+// Функция рисования кривой
 const drawCurve = (
   ctx: CanvasRenderingContext2D,
   data: number[],
@@ -171,9 +171,9 @@ const drawCurve = (
   chartHeight: number,
   dpr: number,
 ) => {
-  const max = maxValue.value || 0.1 // 避免除以零
+  const max = maxValue.value || 0.1 // Избегаем деления на ноль
 
-  // 绘制曲线
+  // Рисование кривой
   ctx.beginPath()
   ctx.strokeStyle = color
   ctx.lineWidth = 2 * dpr
@@ -192,31 +192,31 @@ const drawCurve = (
 
   ctx.stroke()
 
-  // 绘制渐变区域
+  // Рисование градиентной области
   ctx.lineTo(padding.left + chartWidth, padding.top + chartHeight)
   ctx.lineTo(padding.left, padding.top + chartHeight)
   ctx.closePath()
 
   const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartHeight)
-  gradient.addColorStop(0, `${color}40`) // 40 为透明度的十六进制
-  gradient.addColorStop(1, `${color}05`) // 05 为透明度的十六进制
+  gradient.addColorStop(0, `${color}40`) // 40 - шестнадцатеричный код прозрачности
+  gradient.addColorStop(1, `${color}05`) // 05 - шестнадцатеричный код прозрачности
 
   ctx.fillStyle = gradient
   ctx.fill()
 }
 
-// 更新数据
+// Обновление данных
 const updateData = () => {
-  // 直接使用字节单位保存数据，方便后续处理
+  // Сохранение данных в байтах для удобства последующей обработки
   const uploadSpeed = props.uploadSpeed
   const downloadSpeed = props.downloadSpeed
 
-  // 移除最旧的数据
+  // Удаление самых старых данных
   uploadData.value.shift()
   downloadData.value.shift()
   timeLabels.value.shift()
 
-  // 添加新数据（存储MB值保持现有逻辑一致）
+  // Добавление новых данных (сохранение значений в МБ для сохранения существующей логики)
   uploadData.value.push(uploadSpeed / 1024 / 1024)
   downloadData.value.push(downloadSpeed / 1024 / 1024)
 
@@ -224,70 +224,70 @@ const updateData = () => {
   const timeStr = `${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`
   timeLabels.value.push(timeStr)
 
-  // 重绘图表
+  // Перерисовка графика
   drawChart()
 }
 
 let updateTimer: number | null = null
 
-// 启动定时更新
+// Запуск периодического обновления
 const startUpdates = () => {
   if (updateTimer !== null) {
     clearInterval(updateTimer)
   }
 
-  console.log('启动图表更新定时器')
+  console.log('Запуск таймера обновления графика')
   updateTimer = setInterval(() => {
     updateData()
   }, 1000) as unknown as number
 }
 
-// 重置并刷新图表
+// Сброс и обновление графика
 const resetAndRefresh = () => {
-  console.log('重置并刷新图表')
+  console.log('Сброс и обновление графика')
 
-  // 清除所有数据
+  // Очистка всех данных
   uploadData.value = Array(MAX_DATA_POINTS).fill(0)
   downloadData.value = Array(MAX_DATA_POINTS).fill(0)
   timeLabels.value = Array(MAX_DATA_POINTS).fill('')
 
-  // 确保重新获取容器大小
+  // Обеспечение повторного получения размеров контейнера
   if (chartContainer.value && chartCanvas.value) {
     const { width, height } = chartContainer.value.getBoundingClientRect()
     const dpr = window.devicePixelRatio || 1
 
-    // 重置画布大小强制重新渲染
+    // Сброс размеров холста для принудительного повторного рендеринга
     chartCanvas.value.width = width * dpr
     chartCanvas.value.height = height * dpr
     chartCanvas.value.style.width = `${width}px`
     chartCanvas.value.style.height = `${height}px`
   }
 
-  // 重新初始化图表
+  // Повторная инициализация графика
   setTimeout(() => {
     initChart()
-    // 立即更新一次数据以显示当前状态
+    // Немедленное обновление данных для отображения текущего состояния
     updateData()
-    // 确保定时更新器在运行
+    // Обеспечение работы таймера обновления
     if (updateTimer === null) {
       startUpdates()
     }
   }, 50)
 }
 
-// 组件挂载时初始化
+// Инициализация при монтировании компонента
 onMounted(() => {
-  // 延迟执行以确保DOM已完全渲染
+  // Задержка выполнения для обеспечения полной отрисовки DOM
   setTimeout(() => {
     initChart()
     startUpdates()
   }, 100)
 
-  // 添加窗口大小变化事件监听器
+  // Добавление слушателя событий изменения размера окна
   window.addEventListener('resize', handleResize)
 })
 
-// 组件卸载时清理
+// Очистка при размонтировании компонента
 onUnmounted(() => {
   if (updateTimer !== null) {
     clearInterval(updateTimer)
@@ -297,16 +297,16 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
 })
 
-// 监听主题变化
+// Слушатель изменений темы
 watch(themeVars, () => {
-  console.log('主题变化，重绘图表')
+  console.log('Изменение темы, перерисовка графика')
   drawChart()
 })
 
-// 处理窗口大小变化
+// Обработка изменения размера окна
 const handleResize = () => {
   if (chartContainer.value && chartCanvas.value) {
-    console.log('窗口大小变化，重新绘制图表')
+    console.log('Изменение размера окна, повторная отрисовка графика')
     initChart()
   }
 }

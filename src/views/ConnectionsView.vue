@@ -3,13 +3,13 @@
     <n-card class="connections-card" :bordered="false">
       <template #header>
         <div class="card-header">
-          <h2>连接列表</h2>
+          <h2>Список соединений</h2>
           <n-space>
             <n-button type="primary" @click="refreshConnections" :loading="loading">
               <template #icon>
                 <n-icon><refresh-outline /></n-icon>
               </template>
-              刷新
+              Обновить
             </n-button>
           </n-space>
         </div>
@@ -18,14 +18,14 @@
       <n-spin :show="loading">
         <div class="stats-bar">
           <n-space justify="space-between" align="center">
-            <n-statistic label="活跃连接">
+            <n-statistic label="Активные соединения">
               {{ connections.length }}
             </n-statistic>
             <n-space>
-              <n-statistic label="上传总流量">
+              <n-statistic label="Общий объем загрузки">
                 {{ formatBytes(connectionsTotal.upload) }}
               </n-statistic>
-              <n-statistic label="下载总流量">
+              <n-statistic label="Общий объем скачивания">
                 {{ formatBytes(connectionsTotal.download) }}
               </n-statistic>
             </n-space>
@@ -42,7 +42,7 @@
             striped
           />
         </div>
-        <n-empty v-else description="暂无活跃连接" />
+        <n-empty v-else description="Нет активных соединений" />
       </n-spin>
     </n-card>
   </div>
@@ -58,11 +58,11 @@ const message = useMessage()
 const loading = ref(false)
 const infoStore = useInfoStore()
 
-// 使用计算属性来获取连接信息
+// Использование вычисляемых свойств для получения информации о соединениях
 const connections = computed(() => infoStore.connections)
 const connectionsTotal = computed(() => infoStore.connectionsTotal)
 
-// 定义连接数据接口
+// Определение интерфейса данных о соединении
 interface ConnectionMetadata {
   destinationIP: string
   destinationPort: string
@@ -86,7 +86,7 @@ interface Connection {
   upload: number
 }
 
-// 格式化字节大小的函数
+// Форматирование размера в байтах
 const formatBytes = (bytes: number) => {
   if (bytes === 0) return '0 B'
   const k = 1024
@@ -95,7 +95,7 @@ const formatBytes = (bytes: number) => {
   return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i]
 }
 
-// 格式化时间
+// Форматирование времени
 const formatTime = (timeString: string) => {
   try {
     const date = new Date(timeString)
@@ -105,7 +105,7 @@ const formatTime = (timeString: string) => {
   }
 }
 
-// 定义表格列
+// Определение столбцов таблицы
 const columns: DataTableColumns<Connection> = [
   {
     title: 'ID',
@@ -116,7 +116,7 @@ const columns: DataTableColumns<Connection> = [
     },
   },
   {
-    title: '开始时间',
+    title: 'Время начала',
     key: 'start',
     width: 160,
     render(row: Connection) {
@@ -124,7 +124,7 @@ const columns: DataTableColumns<Connection> = [
     },
   },
   {
-    title: '网络/类型',
+    title: 'Сеть/Тип',
     key: 'network',
     width: 120,
     render(row: Connection) {
@@ -158,7 +158,7 @@ const columns: DataTableColumns<Connection> = [
     },
   },
   {
-    title: '源地址',
+    title: 'Источник',
     key: 'source',
     width: 200,
     render(row: Connection) {
@@ -169,13 +169,13 @@ const columns: DataTableColumns<Connection> = [
         {
           trigger: () => `${sourceIP}:${sourcePort}`,
           default: () =>
-            h('div', {}, [h('div', {}, `IP: ${sourceIP}`), h('div', {}, `端口: ${sourcePort}`)]),
+            h('div', {}, [h('div', {}, `IP: ${sourceIP}`), h('div', {}, `Порт: ${sourcePort}`)]),
         },
       )
     },
   },
   {
-    title: '目标地址',
+    title: 'Назначение',
     key: 'destination',
     width: 200,
     render(row: Connection) {
@@ -187,16 +187,16 @@ const columns: DataTableColumns<Connection> = [
           trigger: () => host || `${destinationIP}:${destinationPort}`,
           default: () =>
             h('div', {}, [
-              host ? h('div', {}, `主机: ${host}`) : null,
+              host ? h('div', {}, `Хост: ${host}`) : null,
               h('div', {}, `IP: ${destinationIP}`),
-              h('div', {}, `端口: ${destinationPort}`),
+              h('div', {}, `Порт: ${destinationPort}`),
             ]),
         },
       )
     },
   },
   {
-    title: '规则',
+    title: 'Правило',
     key: 'rule',
     width: 160,
     render(row: Connection) {
@@ -223,17 +223,17 @@ const columns: DataTableColumns<Connection> = [
     },
   },
   {
-    title: '进程',
+    title: 'Процесс',
     key: 'process',
     ellipsis: {
       tooltip: true,
     },
     render(row: Connection) {
-      return row.metadata.processPath || '未知'
+      return row.metadata.processPath || 'Неизвестно'
     },
   },
   {
-    title: '流量',
+    title: 'Трафик',
     key: 'traffic',
     width: 160,
     render(row: Connection) {
@@ -273,28 +273,28 @@ const columns: DataTableColumns<Connection> = [
   },
 ]
 
-// 分页设置
+// Настройки пагинации
 const pagination = {
   pageSize: 10,
 }
 
-// 刷新连接列表
+// Обновление списка соединений
 const refreshConnections = async () => {
   loading.value = true
   try {
-    // 这里实际上不需要做什么，因为infoStore中的connections已经通过WebSocket自动更新
-    // 但我们仍然提供刷新按钮以便于用户手动刷新界面
-    message.success('连接列表已刷新')
+    // Здесь фактически ничего не нужно делать, так как соединения в infoStore автоматически обновляются через WebSocket
+    // Но мы все равно предоставляем кнопку обновления для удобства пользователя
+    message.success('Список соединений обновлен')
   } catch (error) {
-    console.error('刷新连接列表失败:', error)
-    message.error(`刷新连接列表失败: ${error}`)
+    console.error('Не удалось обновить список соединений:', error)
+    message.error(`Не удалось обновить список соединений: ${error}`)
   } finally {
     loading.value = false
   }
 }
 
 onMounted(() => {
-  // 当组件挂载时，确保infoStore中的连接数据已经初始化
+  // При монтировании компонента, убедитесь, что данные соединений в infoStore уже инициализированы
   if (!connections.value.length && infoStore.uptime > 0) {
     refreshConnections()
   }

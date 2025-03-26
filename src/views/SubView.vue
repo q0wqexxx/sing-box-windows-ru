@@ -1,6 +1,6 @@
 <template>
   <div class="sub-container">
-    <!-- 订阅管理卡片 -->
+    <!-- Карточка управления подписками -->
     <n-card class="sub-card" :bordered="false">
       <template #header>
         <div class="card-header">
@@ -9,10 +9,10 @@
               <n-icon size="24" class="card-icon">
                 <link-outline />
               </n-icon>
-              订阅管理
+              Управление подписками
             </n-h3>
             <n-tag :bordered="false" type="info" size="medium" class="sub-count-tag">
-              {{ subStore.list.length }} 个订阅
+              {{ subStore.list.length }} подписок
             </n-tag>
           </div>
           <n-tooltip trigger="hover" placement="top">
@@ -32,7 +32,7 @@
                 </template>
               </n-button>
             </template>
-            添加订阅
+            Добавить подписку
           </n-tooltip>
         </div>
       </template>
@@ -70,7 +70,7 @@
                       :bordered="false"
                       class="active-tag"
                     >
-                      使用中
+                      Используется
                     </n-tag>
                     <n-tag
                       v-if="item.isManual"
@@ -79,7 +79,7 @@
                       :bordered="false"
                       class="manual-tag"
                     >
-                      手动
+                      Вручную
                     </n-tag>
                   </div>
                 </n-space>
@@ -100,7 +100,7 @@
                         </template>
                       </n-button>
                     </template>
-                    复制链接
+                    Копировать ссылку
                   </n-tooltip>
 
                   <n-tooltip trigger="hover" placement="top">
@@ -119,10 +119,10 @@
                         </template>
                       </n-button>
                     </template>
-                    编辑订阅
+                    Редактировать подписку
                   </n-tooltip>
 
-                  <!-- 新增：查看/编辑当前配置按钮 -->
+                  <!-- Новое: кнопка просмотра/редактирования текущей конфигурации -->
                   <n-tooltip v-if="subStore.activeIndex === index" trigger="hover" placement="top">
                     <template #trigger>
                       <n-button
@@ -140,13 +140,13 @@
                         </template>
                       </n-button>
                     </template>
-                    编辑当前配置
+                    Редактировать текущую конфигурацию
                   </n-tooltip>
 
                   <n-popconfirm
                     @positive-click="deleteSubscription(index)"
-                    positive-text="删除"
-                    negative-text="取消"
+                    positive-text="Удалить"
+                    negative-text="Отмена"
                   >
                     <template #trigger>
                       <n-button
@@ -164,7 +164,7 @@
                         </template>
                       </n-button>
                     </template>
-                    确定要删除这个订阅吗？
+                    Вы уверены, что хотите удалить эту подписку?
                   </n-popconfirm>
                 </n-space>
               </n-flex>
@@ -177,7 +177,7 @@
 
               <n-flex justify="space-between" align="center">
                 <n-text depth="3" class="update-time">
-                  {{ item.lastUpdate ? formatTime(item.lastUpdate) : '从未使用' }}
+                  {{ item.lastUpdate ? formatTime(item.lastUpdate) : 'Никогда не использовалось' }}
                 </n-text>
                 <n-button
                   secondary
@@ -194,7 +194,7 @@
                       <play-circle-outline v-else />
                     </n-icon>
                   </template>
-                  {{ subStore.activeIndex === index ? '重新使用' : '使用' }}
+                  {{ subStore.activeIndex === index ? 'Использовать снова' : 'Использовать' }}
                 </n-button>
               </n-flex>
             </n-space>
@@ -202,25 +202,25 @@
         </n-grid-item>
       </n-grid>
 
-      <n-empty v-if="!subStore.list.length" description="暂无订阅" class="empty-container">
+      <n-empty v-if="!subStore.list.length" description="Нет подписок" class="empty-container">
         <template #extra>
           <n-button type="primary" @click="showAddModal = true" class="add-sub-button">
             <template #icon>
               <n-icon><add-outline /></n-icon>
             </template>
-            添加订阅
+            Добавить подписку
           </n-button>
         </template>
       </n-empty>
     </n-card>
   </div>
 
-  <!-- 添加/编辑订阅对话框 -->
+  <!-- Диалог добавления/редактирования подписки -->
   <n-modal
     v-model:show="showAddModal"
     :mask-closable="false"
     preset="dialog"
-    :title="editIndex === null ? '添加订阅' : '编辑订阅'"
+    :title="editIndex === null ? 'Добавить подписку' : 'Редактировать подписку'"
     :bordered="false"
     style="width: 600px"
     class="sub-modal"
@@ -233,33 +233,33 @@
       label-width="80"
       require-mark-placement="right-hanging"
     >
-      <n-form-item label="名称" path="name">
+      <n-form-item label="Название" path="name">
         <n-input
           v-model:value="formValue.name"
-          placeholder="请输入订阅名称"
+          placeholder="Введите название подписки"
           @keydown.enter.prevent
           class="form-input"
         />
       </n-form-item>
 
       <n-tabs type="line" animated v-model:value="activeTab" class="sub-tabs">
-        <n-tab-pane name="url" tab="URL添加">
-          <n-form-item label="链接" path="url">
+        <n-tab-pane name="url" tab="Добавить по URL">
+          <n-form-item label="Ссылка" path="url">
             <n-input
               v-model:value="formValue.url"
               type="textarea"
-              placeholder="请输入订阅链接"
+              placeholder="Введите ссылку на подписку"
               :autosize="{ minRows: 2, maxRows: 4 }"
               class="form-input"
             />
           </n-form-item>
         </n-tab-pane>
-        <n-tab-pane name="manual" tab="手动编辑">
-          <n-form-item label="内容" path="manualContent">
+        <n-tab-pane name="manual" tab="Редактировать вручную">
+          <n-form-item label="Содержание" path="manualContent">
             <n-input
               v-model:value="formValue.manualContent"
               type="textarea"
-              placeholder="请输入配置内容（JSON格式）"
+              placeholder="Введите содержание конфигурации (в формате JSON)"
               :autosize="{ minRows: 8, maxRows: 20 }"
               class="form-input code-input"
             />
@@ -269,20 +269,20 @@
     </n-form>
     <template #action>
       <n-space justify="end">
-        <n-button @click="handleCancel" class="modal-button">取消</n-button>
+        <n-button @click="handleCancel" class="modal-button">Отмена</n-button>
         <n-button type="primary" @click="handleConfirm" :loading="isLoading" class="modal-button">
-          确认
+          Подтвердить
         </n-button>
       </n-space>
     </template>
   </n-modal>
 
-  <!-- 编辑当前配置对话框 -->
+  <!-- Диалог редактирования текущей конфигурации -->
   <n-modal
     v-model:show="showConfigModal"
     :mask-closable="false"
     preset="dialog"
-    title="编辑当前配置"
+    title="Редактировать текущую конфигурацию"
     :bordered="false"
     style="width: 800px"
     class="config-modal"
@@ -290,20 +290,20 @@
     <n-input
       v-model:value="currentConfig"
       type="textarea"
-      placeholder="配置内容（JSON格式）"
+      placeholder="Содержание конфигурации (в формате JSON)"
       :autosize="{ minRows: 15, maxRows: 30 }"
       class="form-input code-input"
     />
     <template #action>
       <n-space justify="end">
-        <n-button @click="showConfigModal = false" class="modal-button">取消</n-button>
+        <n-button @click="showConfigModal = false" class="modal-button">Отмена</n-button>
         <n-button
           type="primary"
           @click="saveCurrentConfig"
           :loading="isConfigLoading"
           class="modal-button"
         >
-          保存并应用
+          Сохранить и применить
         </n-button>
       </n-space>
     </template>
@@ -346,12 +346,12 @@ const isLoading = ref(false)
 const { width } = useWindowSize()
 const activeTab = ref('url')
 
-// 当前配置编辑相关变量
+// Переменные для редактирования текущей конфигурации
 const showConfigModal = ref(false)
 const currentConfig = ref('')
 const isConfigLoading = ref(false)
 
-// 根据窗口宽度调整网格列数
+// Настройка количества колонок в сетке в зависимости от ширины окна
 const gridCols = computed(() => {
   if (width.value < 768) return 1
   if (width.value < 1200) return 2
@@ -367,23 +367,23 @@ const formValue = ref<Subscription>({
 })
 
 const rules: FormRules = {
-  name: [{ required: true, message: '请输入订阅名称', trigger: 'blur' }],
+  name: [{ required: true, message: 'Введите название подписки', trigger: 'blur' }],
   url: [
     {
       required: true,
-      message: '请输入订阅链接',
+      message: 'Введите ссылку на подписку',
       trigger: 'blur',
       validator: (rule, value) => {
-        // 如果是URL模式，验证URL；如果是手动编辑模式，不验证URL
+        // Проверка URL только в режиме URL
         return activeTab.value === 'url' ? !!value : true
       },
     },
     {
       type: 'url',
-      message: '请输入有效的URL',
+      message: 'Введите действительный URL',
       trigger: 'blur',
       validator: (rule, value) => {
-        // 只在URL模式下验证URL格式
+        // Проверка формата URL только в режиме URL
         return activeTab.value === 'url' ? true : true
       },
     },
@@ -391,10 +391,10 @@ const rules: FormRules = {
   manualContent: [
     {
       required: true,
-      message: '请输入配置内容',
+      message: 'Введите содержание конфигурации',
       trigger: 'blur',
       validator: (rule, value) => {
-        // 如果是手动编辑模式，验证内容；如果是URL模式，不验证内容
+        // Проверка содержания только в режиме ручного редактирования
         return activeTab.value === 'manual' ? !!value : true
       },
     },
@@ -421,7 +421,7 @@ const handleEdit = (index: number, item: Subscription) => {
     isManual: item.isManual,
     manualContent: item.manualContent,
   }
-  // 根据订阅类型设置activeTab
+  // Установка активной вкладки в зависимости от типа подписки
   activeTab.value = item.isManual ? 'manual' : 'url'
   showAddModal.value = true
 }
@@ -432,24 +432,24 @@ const handleConfirm = () => {
       try {
         isLoading.value = true
 
-        // 确定是否是手动编辑模式
+        // Определение режима редактирования
         const isManual = activeTab.value === 'manual'
 
         if (isManual && formValue.value.manualContent) {
-          // 如果是手动编辑模式且有内容，直接保存内容
+          // Если режим ручного редактирования и есть содержание, сохраняем его
           if (editIndex.value === null) {
-            // 如果是新建订阅，同时使用这个内容
+            // Если это новая подписка, используем это содержание
             await invoke('add_manual_subscription', { content: formValue.value.manualContent })
           }
         } else if (!isManual) {
-          // 如果是URL模式且是新建订阅
+          // Если режим URL и это новая подписка
           if (editIndex.value === null) {
             await invoke('download_subscription', { url: formValue.value.url })
           }
         }
 
         if (editIndex.value === null) {
-          // 添加新订阅
+          // Добавление новой подписки
           subStore.list.push({
             name: formValue.value.name,
             url: formValue.value.url,
@@ -459,14 +459,14 @@ const handleConfirm = () => {
             manualContent: isManual ? formValue.value.manualContent : undefined,
           })
 
-          // 如果是新添加的手动配置，自动设为当前活跃订阅
+          // Если это новая ручная конфигурация, автоматически устанавливаем ее активной
           if (isManual) {
             subStore.activeIndex = subStore.list.length - 1
           }
 
-          message.success('订阅添加成功')
+          message.success('Подписка успешно добавлена')
         } else {
-          // 更新订阅
+          // Обновление подписки
           subStore.list[editIndex.value] = {
             ...subStore.list[editIndex.value],
             name: formValue.value.name,
@@ -474,12 +474,12 @@ const handleConfirm = () => {
             isManual: isManual,
             manualContent: isManual ? formValue.value.manualContent : undefined,
           }
-          message.success('订阅更新成功')
+          message.success('Подписка успешно обновлена')
         }
         showAddModal.value = false
         resetForm()
       } catch (error) {
-        message.error('操作失败：' + error)
+        message.error('Ошибка операции: ' + error)
       } finally {
         isLoading.value = false
       }
@@ -494,34 +494,34 @@ const handleCancel = () => {
 
 const deleteSubscription = (index: number) => {
   if (subStore.activeIndex === index) {
-    message.warning('不能删除当前正在使用的订阅')
+    message.warning('Нельзя удалить текущую активную подписку')
     return
   }
   subStore.list.splice(index, 1)
-  message.success('订阅已删除')
+  message.success('Подписка удалена')
 }
 
 const useSubscription = async (url: string, index: number) => {
   try {
-    // 标记正在加载
+    // Установка состояния загрузки
     subStore.list[index].isLoading = true
 
     const item = subStore.list[index]
 
     if (item.isManual && item.manualContent) {
-      // 如果是手动配置，直接使用保存的内容
+      // Если это ручная конфигурация, используем сохраненное содержание
       await invoke('add_manual_subscription', { content: item.manualContent })
     } else {
-      // 否则从URL下载内容
+      // Иначе загружаем содержание по URL
       await invoke('download_subscription', { url })
     }
 
-    // 更新订阅状态
+    // Обновление состояния подписки
     subStore.list[index].lastUpdate = Date.now()
     subStore.activeIndex = index
-    message.success('订阅使用成功')
+    message.success('Подписка успешно использована')
   } catch (error) {
-    message.error('订阅使用失败：' + error)
+    message.error('Ошибка использования подписки: ' + error)
   } finally {
     subStore.list[index].isLoading = false
   }
@@ -529,12 +529,12 @@ const useSubscription = async (url: string, index: number) => {
 
 const copyUrl = (url: string) => {
   navigator.clipboard.writeText(url)
-  message.success('链接已复制到剪贴板')
+  message.success('Ссылка скопирована в буфер обмена')
 }
 
 const formatTime = (timestamp: number): string => {
   const date = new Date(timestamp)
-  return `最后更新: ${date.toLocaleString('zh-CN', {
+  return `Последнее обновление: ${date.toLocaleString('ru-RU', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -546,14 +546,14 @@ const formatTime = (timestamp: number): string => {
 const editCurrentConfig = async () => {
   try {
     isConfigLoading.value = true
-    // 获取当前配置内容
+    // Получение текущего содержания конфигурации
     const config = await invoke('get_current_config')
     if (typeof config === 'string') {
       currentConfig.value = config
       showConfigModal.value = true
     }
   } catch (error) {
-    message.error('读取配置失败：' + error)
+    message.error('Ошибка чтения конфигурации: ' + error)
   } finally {
     isConfigLoading.value = false
   }
@@ -563,12 +563,12 @@ const saveCurrentConfig = async () => {
   try {
     isConfigLoading.value = true
 
-    // 保存配置内容
+    // Сохранение содержания конфигурации
     await invoke('add_manual_subscription', {
       content: currentConfig.value,
     })
 
-    // 如果当前活跃订阅是手动配置，更新其内容
+    // Если текущая активная подписка является ручной конфигурацией, обновляем ее содержание
     if (subStore.activeIndex !== null) {
       const activeItem = subStore.list[subStore.activeIndex]
       if (activeItem.isManual) {
@@ -577,10 +577,10 @@ const saveCurrentConfig = async () => {
       }
     }
 
-    message.success('配置已保存并应用')
+    message.success('Конфигурация сохранена и применена')
     showConfigModal.value = false
   } catch (error) {
-    message.error('保存配置失败：' + error)
+    message.error('Ошибка сохранения конфигурации: ' + error)
   } finally {
     isConfigLoading.value = false
   }
@@ -780,7 +780,7 @@ const saveCurrentConfig = async () => {
   font-weight: 500;
 }
 
-/* 新增样式 */
+/* Новое: стили */
 .sub-tabs {
   margin-top: 10px;
 }

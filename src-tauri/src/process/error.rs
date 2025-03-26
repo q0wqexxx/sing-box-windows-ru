@@ -3,34 +3,34 @@ use thiserror::Error;
 
 #[derive(Debug, Error, Clone)]
 pub enum ProcessError {
-    #[error("进程已在运行中")]
+    #[error("Процесс уже запущен")]
     AlreadyRunning,
 
-    #[error("进程未运行")]
+    #[error("Процесс не запущен")]
     NotRunning,
 
-    #[error("启动失败: {0}")]
+    #[error("Ошибка запуска: {0}")]
     StartFailed(String),
 
-    #[error("停止失败: {0}")]
+    #[error("Ошибка остановки: {0}")]
     StopFailed(String),
 
-    #[error("进程状态检查失败: {0}")]
+    #[error("Ошибка проверки состояния процесса: {0}")]
     StatusCheckFailed(String),
 
-    #[error("配置错误: {0}")]
+    #[error("Ошибка конфигурации: {0}")]
     ConfigError(String),
 
-    #[error("系统错误: {0}")]
+    #[error("Системная ошибка: {0}")]
     SystemError(String),
 
-    #[error("权限错误: {0}")]
+    #[error("Ошибка прав доступа: {0}")]
     PermissionError(String),
 
-    #[error("网络错误: {0}")]
+    #[error("Сетевая ошибка: {0}")]
     NetworkError(String),
 
-    #[error("未知错误: {0}")]
+    #[error("Неизвестная ошибка: {0}")]
     Unknown(String),
 }
 
@@ -46,11 +46,11 @@ pub enum ProcessStatus {
 impl fmt::Display for ProcessStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ProcessStatus::Starting => write!(f, "正在启动"),
-            ProcessStatus::Running => write!(f, "运行中"),
-            ProcessStatus::Stopping => write!(f, "正在停止"),
-            ProcessStatus::Stopped => write!(f, "已停止"),
-            ProcessStatus::Failed(err) => write!(f, "失败: {}", err),
+            ProcessStatus::Starting => write!(f, "Запуск"),
+            ProcessStatus::Running => write!(f, "Запущен"),
+            ProcessStatus::Stopping => write!(f, "Остановка"),
+            ProcessStatus::Stopped => write!(f, "Остановлен"),
+            ProcessStatus::Failed(err) => write!(f, "Ошибка: {}", err),
         }
     }
 }

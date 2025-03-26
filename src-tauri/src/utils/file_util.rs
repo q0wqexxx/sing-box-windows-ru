@@ -6,7 +6,7 @@ use tracing::{error, info};
 use zip::ZipArchive;
 use crate::app::constants::{messages, network};
 
-// 根据url下载文件到指定位置
+// Загрузка файла по URL в указанное место
 pub async fn download_file<F>(url: String, path: &str, progress_callback: F) -> Result<(), String>
 where
     F: Fn(u32) + Send + 'static,
@@ -16,7 +16,7 @@ where
 
     let client = reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(network::HTTP_TIMEOUT_SECONDS))
-        .no_proxy() // 禁用代理
+        .no_proxy() // Отключение прокси
         .build()
         .map_err(|e| format!("{}: {}", messages::ERR_HTTP_CLIENT_FAILED, e))?;
 
@@ -30,15 +30,15 @@ where
         return Err(format!("{}: {}", messages::ERR_SERVER_ERROR, response.status()));
     }
 
-    // 获取文件大小，如果不存在则为0
+    // Получение размера файла, если не существует, то 0
     let total_size = response.content_length().unwrap_or(0);
     let unknown_size = total_size == 0;
     
     if unknown_size {
-        info!("无法获取文件大小，将使用流式下载");
+        info!("Не удалось получить размер файла, будет использоваться потоковая загрузка");
     }
 
-    // 创建目录
+    // Создание директории
     if let Some(parent) = file_path.parent() {
         if let Err(e) = std::fs::create_dir_all(parent) {
             error!("{}: {}", messages::ERR_CREATE_DIR_FAILED, e);
@@ -46,7 +46,7 @@ where
         }
     }
 
-    // 创建临时文件
+    // Создание временного файла
     let temp_path = file_path.with_extension("tmp");
     let mut file = File::create(&temp_path).map_err(|e| format!("{}: {}", messages::ERR_CREATE_FILE_FAILED, e))?;
 
@@ -55,7 +55,7 @@ where
     let mut last_percent = 0u32;
     let mut last_progress_update = std::time::Instant::now();
 
-    // 开始下载
+    // Начало загрузки
     while let Some(item) = stream.next().await {
         let chunk = item.map_err(|e| format!("{}: {}", messages::ERR_REQUEST_FAILED, e))?;
         file.write_all(&chunk)
@@ -63,12 +63,12 @@ where
 
         downloaded += chunk.len() as u64;
         
-        // 根据是否知道文件大小，使用不同的进度计算方式
+        // В зависимости от того, известен ли размер файла, используется разный способ расчета прогресса
         if unknown_size {
-            // 对于未知大小的文件，每1MB更新一次进度，使用已下载的大小作为进度指示
-            // 下载的越多，进度条增长越慢，给用户一种持续下载的感觉
+            // Для файлов неизвестного размера обновление прогресса каждые 1 МБ, используя загруженный размер в качестве индикатора прогресса
+            // Чем больше загружено, тем медленнее растет прогресс, создавая у пользователя ощущение непрерывной загрузки
             let now = std::time::Instant::now();
-            if now.duration_since(last_progress_update).as_millis() > 500 { // 每500ms更新一次
+            if now.duration_since(last_progress_update).as_millis() > 500 { // Обновление каждые 500 мс
                 let percent = ((downloaded as f64 / 1_000_000.0).min(100.0)) as u32;
                 if percent != last_percent {
                     last_percent = percent;
@@ -77,7 +77,7 @@ where
                 }
             }
         } else {
-            // 已知文件大小，正常计算百分比
+            // Известный размер файла, нормальный расчет процента
             let percent = ((downloaded as f64 / total_size as f64) * 100.0) as u32;
             if percent != last_percent {
                 last_percent = percent;
@@ -86,7 +86,7 @@ where
         }
     }
 
-    // 完成下载，重命名临时文件
+    // Завершение загрузки, переименование временного файла
     std::fs::rename(&temp_path, &file_path)
         .map_err(|e| format!("{}: {}", messages::ERR_WRITE_FILE_FAILED, e))?;
 
@@ -96,7 +96,7 @@ where
 pub async fn unzip_file(path: &str, to: &str) -> Result<(), String> {
     info!("{}: {} -> {}", messages::INFO_UNZIP_STARTED, path, to);
 
-    // 打开ZIP文件
+    // Открытие ZIP файла
     let file = match File::open(path) {
         Ok(file) => file,
         Err(e) => {
@@ -105,7 +105,7 @@ pub async fn unzip_file(path: &str, to: &str) -> Result<(), String> {
         }
     };
 
-    // 创建ZipArchive对象
+    // Создание объекта ZipArchive
     let mut archive = match ZipArchive::new(file) {
         Ok(archive) => archive,
         Err(e) => {
@@ -114,19 +114,19 @@ pub async fn unzip_file(path: &str, to: &str) -> Result<(), String> {
         }
     };
 
-    // 确保目标目录存在
+    // Убедиться, что целевая директория существует
     if let Err(e) = std::fs::create_dir_all(to) {
         error!("{}: {}", messages::ERR_CREATE_DIR_FAILED, e);
         return Err(format!("{}: {}", messages::ERR_CREATE_DIR_FAILED, e));
     }
 
-    // 遍历ZIP文件中的所有条目
+    // Перебор всех элементов в ZIP файле
     for i in 0..archive.len() {
         let mut file = archive
             .by_index(i)
             .map_err(|e| format!("{}: {}", messages::ERR_EXTRACT_FILE_FAILED, e))?;
 
-        // 获取文件名并去除前导路径
+        // Получение имени файла и удаление ведущих путей
         let file_name = match Path::new(file.name()).file_name() {
             Some(name) => name,
             None => {
@@ -141,14 +141,14 @@ pub async fn unzip_file(path: &str, to: &str) -> Result<(), String> {
         if file.is_dir() {
             std::fs::create_dir_all(&outpath).map_err(|e| format!("{}: {}", messages::ERR_CREATE_DIR_FAILED, e))?;
         } else {
-            // 创建文件父目录
+            // Создание родительской директории файла
             if let Some(parent) = outpath.parent() {
                 if !parent.exists() {
                     std::fs::create_dir_all(parent).map_err(|e| format!("{}: {}", messages::ERR_CREATE_DIR_FAILED, e))?;
                 }
             }
             
-            // 创建文件并写入内容
+            // Создание файла и запись содержимого
             let mut outfile = File::create(&outpath).map_err(|e| format!("{}: {}", messages::ERR_CREATE_FILE_FAILED, e))?;
             std::io::copy(&mut file, &mut outfile).map_err(|e| format!("{}: {}", messages::ERR_WRITE_FILE_FAILED, e))?;
         }
@@ -157,7 +157,7 @@ pub async fn unzip_file(path: &str, to: &str) -> Result<(), String> {
     Ok(())
 }
 
-// 从代理下载，失败后尝试直接下载
+// Загрузка через прокси, при неудаче попытка прямой загрузки
 pub async fn download_with_fallback<F>(
     original_url: &str, 
     path: &str, 
@@ -166,18 +166,18 @@ pub async fn download_with_fallback<F>(
 where
     F: Fn(u32) + Send + Clone + 'static,
 {
-    // 首先尝试通过代理下载 https://gh-proxy.com/https://github.com/...
+    // Сначала попытка загрузки через прокси https://gh-proxy.com/https://github.com/...
     let proxy_url = format!("https://gh-proxy.com/{}", original_url);
-    info!("尝试通过代理下载: {}", proxy_url);
+    info!("Попытка загрузки через прокси: {}", proxy_url);
     
     match download_file(proxy_url, path, progress_callback.clone()).await {
         Ok(_) => {
-            info!("通过代理下载成功");
+            info!("Загрузка через прокси успешна");
             Ok(())
         },
         Err(e) => {
-            info!("代理下载失败: {}，尝试直接下载", e);
-            // 代理下载失败，尝试直接下载
+            info!("Не удалось загрузить через прокси: {}, попытка прямой загрузки", e);
+            // Если загрузка через прокси не удалась, попытка прямой загрузки
             download_file(original_url.to_string(), path, progress_callback).await
         }
     }

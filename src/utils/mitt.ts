@@ -1,21 +1,21 @@
 import type { Emitter } from 'mitt'
 import mitt from 'mitt'
 
-// 定义下载进度接口
+// Определение интерфейса прогресса загрузки
 interface DownloadProgress {
   status: 'checking' | 'found' | 'downloading' | 'extracting' | 'completed'
   progress: number
   message: string
 }
 
-// 定义更新信息接口
+// Определение интерфейса информации об обновлении
 interface UpdateInfo {
   latest_version: string
   download_url: string
   has_update: boolean
 }
 
-// 定义事件类型
+// Определение типов событий
 type Events = {
   'process-status': void
   'download-progress': DownloadProgress
@@ -29,7 +29,7 @@ type Events = {
   error: string
 }
 
-// 创建事件总线实例
+// Создание экземпляра шины событий
 const emitter: Emitter<Events> = mitt<Events>()
 
 export default emitter

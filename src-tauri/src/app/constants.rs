@@ -1,137 +1,137 @@
-//! 应用常量定义
+//! Определение констант приложения
 //! 
-//! 这个文件包含应用程序中使用的所有常量定义
-//! 集中管理常量便于统一修改和维护
+//! Этот файл содержит все определения констант, используемых в приложении
+//! Централизованное управление константами упрощает их изменение и обслуживание
 
-/// 进程相关常量
+/// Константы, связанные с процессами
 pub mod process {
-    /// Windows 创建进程时隐藏控制台窗口的标志
+    /// Флаг для скрытия окна консоли при создании процесса в Windows
     pub const CREATE_NO_WINDOW: u32 = 0x08000000;
     
-    /// 进程超时和延迟常量（秒）
+    /// Константы таймаута и задержки процесса (в секундах)
     pub const GRACEFUL_TIMEOUT: u64 = 5;
     pub const HEALTH_CHECK_INTERVAL: u64 = 30;
     pub const MAX_RESTART_ATTEMPTS: u32 = 3;
     pub const RESTART_DELAY: u64 = 1;
 }
 
-/// 文件路径常量
+/// Константы путей файлов
 pub mod paths {
     use std::path::PathBuf;
     use crate::utils::app_util::get_work_dir;
 
-    /// 获取 Sing-Box 可执行文件路径
+    /// Получение пути к исполняемому файлу Sing-Box
     pub fn get_kernel_path() -> PathBuf {
         let work_dir = get_work_dir();
         PathBuf::from(&work_dir).join("sing-box").join("sing-box.exe")
     }
 
-    /// 获取 Sing-Box 工作目录
+    /// Получение рабочего каталога Sing-Box
     pub fn get_kernel_work_dir() -> PathBuf {
         let work_dir = get_work_dir();
         PathBuf::from(&work_dir).join("sing-box")
     }
 
-    /// 获取配置文件路径
+    /// Получение пути к файлу конфигурации
     pub fn get_config_path() -> PathBuf {
         let work_dir = get_work_dir();
         PathBuf::from(&work_dir).join("sing-box").join("config.json")
     }
 }
 
-/// 网络常量
+/// Константы сети
 pub mod network {
-    /// 默认监听地址
+    /// Адрес по умолчанию для прослушивания
     pub const DEFAULT_LISTEN_ADDRESS: &str = "0.0.0.0";
     
-    /// 默认代理端口
+    /// Порт прокси по умолчанию
     pub const DEFAULT_PROXY_PORT: u16 = 12080;
     
-    /// 默认 Clash API 地址
+    /// Адрес Clash API по умолчанию
     pub const DEFAULT_CLASH_API_ADDRESS: &str = "127.0.0.1";
     
-    /// 默认 Clash API 端口
+    /// Порт Clash API по умолчанию
     pub const DEFAULT_CLASH_API_PORT: u16 = 12081;
     
-    /// 默认 API Token
+    /// Токен API по умолчанию
     pub const DEFAULT_API_TOKEN: &str = "";
     
-    /// 网络请求超时时间（秒）
+    /// Таймаут сетевого запроса (в секундах)
     pub const HTTP_TIMEOUT_SECONDS: u64 = 30;
 }
 
-/// API 常量
+/// Константы API
 pub mod api {
-    /// GitHub API URL
+    /// URL GitHub API
     pub const GITHUB_API_URL: &str = "https://api.github.com/repos/xinggaoya/sing-box-windows/releases/latest";
     
-    /// 用户代理
+    /// Пользовательский агент
     pub const USER_AGENT: &str = "sing-box-windows";
 }
 
-/// 提示消息常量
+/// Константы сообщений
 pub mod messages {
-    // 错误消息
-    pub const ERR_KERNEL_NOT_FOUND: &str = "内核文件不存在";
-    pub const ERR_VERSION_CHECK_FAILED: &str = "执行版本检查失败";
-    pub const ERR_GET_VERSION_FAILED: &str = "获取版本信息失败";
-    pub const ERR_CONFIG_READ_FAILED: &str = "读取配置文件失败";
-    pub const ERR_DOWNLOAD_FAILED: &str = "下载失败";
-    pub const ERR_SUBSCRIPTION_FAILED: &str = "下载订阅失败";
-    pub const ERR_PROCESS_SUBSCRIPTION_FAILED: &str = "处理订阅内容失败";
-    pub const ERR_GET_EXE_PATH_FAILED: &str = "获取当前程序路径失败";
-    pub const ERR_RESTART_FAILED: &str = "重启失败";
-    pub const ERR_INVALID_CONFIG: &str = "配置文件无效";
-    pub const ERR_PROCESS_ALREADY_RUNNING: &str = "进程已在运行中";
-    pub const ERR_PROCESS_NOT_RUNNING: &str = "进程未运行";
-    pub const ERR_PROCESS_START_FAILED: &str = "进程启动失败";
-    pub const ERR_PROCESS_STOP_FAILED: &str = "进程停止失败";
-    pub const ERR_HTTP_CLIENT_FAILED: &str = "创建HTTP客户端失败";
-    pub const ERR_REQUEST_FAILED: &str = "请求失败";
-    pub const ERR_SERVER_ERROR: &str = "服务器返回错误状态码";
-    pub const ERR_FILE_SIZE_UNKNOWN: &str = "无法获取文件大小";
-    pub const ERR_CREATE_DIR_FAILED: &str = "创建目录失败";
-    pub const ERR_CREATE_FILE_FAILED: &str = "创建文件失败";
-    pub const ERR_OPEN_FILE_FAILED: &str = "打开文件失败";
-    pub const ERR_READ_ARCHIVE_FAILED: &str = "读取归档失败";
-    pub const ERR_EXTRACT_FILE_FAILED: &str = "解压文件失败";
-    pub const ERR_INVALID_FILENAME: &str = "无效的文件名";
-    pub const ERR_WRITE_FILE_FAILED: &str = "写入文件失败";
-    pub const ERR_READ_FILE_FAILED: &str = "读取文件失败";
-    pub const ERR_KEY_NOT_FOUND: &str = "未找到键";
+    // Сообщения об ошибках
+    pub const ERR_KERNEL_NOT_FOUND: &str = "Файл ядра не найден";
+    pub const ERR_VERSION_CHECK_FAILED: &str = "Не удалось выполнить проверку версии";
+    pub const ERR_GET_VERSION_FAILED: &str = "Не удалось получить информацию о версии";
+    pub const ERR_CONFIG_READ_FAILED: &str = "Не удалось прочитать файл конфигурации";
+    pub const ERR_DOWNLOAD_FAILED: &str = "Не удалось загрузить";
+    pub const ERR_SUBSCRIPTION_FAILED: &str = "Не удалось загрузить подписку";
+    pub const ERR_PROCESS_SUBSCRIPTION_FAILED: &str = "Не удалось обработать содержимое подписки";
+    pub const ERR_GET_EXE_PATH_FAILED: &str = "Не удалось получить путь к текущей программе";
+    pub const ERR_RESTART_FAILED: &str = "Не удалось перезапустить";
+    pub const ERR_INVALID_CONFIG: &str = "Недействительный файл конфигурации";
+    pub const ERR_PROCESS_ALREADY_RUNNING: &str = "Процесс уже запущен";
+    pub const ERR_PROCESS_NOT_RUNNING: &str = "Процесс не запущен";
+    pub const ERR_PROCESS_START_FAILED: &str = "Не удалось запустить процесс";
+    pub const ERR_PROCESS_STOP_FAILED: &str = "Не удалось остановить процесс";
+    pub const ERR_HTTP_CLIENT_FAILED: &str = "Не удалось создать HTTP-клиент";
+    pub const ERR_REQUEST_FAILED: &str = "Запрос не удался";
+    pub const ERR_SERVER_ERROR: &str = "Сервер вернул ошибочный статус";
+    pub const ERR_FILE_SIZE_UNKNOWN: &str = "Не удалось получить размер файла";
+    pub const ERR_CREATE_DIR_FAILED: &str = "Не удалось создать каталог";
+    pub const ERR_CREATE_FILE_FAILED: &str = "Не удалось создать файл";
+    pub const ERR_OPEN_FILE_FAILED: &str = "Не удалось открыть файл";
+    pub const ERR_READ_ARCHIVE_FAILED: &str = "Не удалось прочитать архив";
+    pub const ERR_EXTRACT_FILE_FAILED: &str = "Не удалось извлечь файл";
+    pub const ERR_INVALID_FILENAME: &str = "Недействительное имя файла";
+    pub const ERR_WRITE_FILE_FAILED: &str = "Не удалось записать файл";
+    pub const ERR_READ_FILE_FAILED: &str = "Не удалось прочитать файл";
+    pub const ERR_KEY_NOT_FOUND: &str = "Ключ не найден";
     
-    // 信息消息
-    pub const INFO_PROCESS_STARTED: &str = "进程启动成功";
-    pub const INFO_PROCESS_STOPPED: &str = "进程已停止";
-    pub const INFO_SYSTEM_PROXY_DISABLED: &str = "系统代理已关闭";
-    pub const INFO_CONFIG_CHECK_PASSED: &str = "配置文件检查通过";
-    pub const INFO_PROXY_MODE_ENABLED: &str = "代理模式已启用";
-    pub const INFO_DOWNLOAD_STARTED: &str = "开始下载文件";
-    pub const INFO_UNZIP_STARTED: &str = "开始解压文件";
-    pub const INFO_EXTRACTING_FILE: &str = "正在解压";
+    // Информационные сообщения
+    pub const INFO_PROCESS_STARTED: &str = "Процесс успешно запущен";
+    pub const INFO_PROCESS_STOPPED: &str = "Процесс остановлен";
+    pub const INFO_SYSTEM_PROXY_DISABLED: &str = "Системный прокси отключен";
+    pub const INFO_CONFIG_CHECK_PASSED: &str = "Проверка файла конфигурации пройдена";
+    pub const INFO_PROXY_MODE_ENABLED: &str = "Режим прокси включен";
+    pub const INFO_DOWNLOAD_STARTED: &str = "Начата загрузка файла";
+    pub const INFO_UNZIP_STARTED: &str = "Начата распаковка файла";
+    pub const INFO_EXTRACTING_FILE: &str = "Распаковка файла";
 }
 
-/// 配置常量
+/// Конфигурационные константы
 pub mod config {
-    /// 默认的 Inbound 标签
+    /// Тег по умолчанию для входящих соединений
     pub const DEFAULT_INBOUND_TAG: &str = "mixed-in";
     
-    /// 默认的 Inbound 类型
+    /// Тип по умолчанию для входящих соединений
     pub const DEFAULT_INBOUND_TYPE: &str = "mixed";
 }
 
-/// 日志常量
+/// Константы для логирования
 pub mod log {
-    /// 日志级别
+    /// Уровень логирования по умолчанию
     pub const DEFAULT_LEVEL: &str = "debug";
     
-    /// 日志目录
+    /// Директория для логов
     pub const DEFAULT_DIR: &str = "logs";
     
-    /// 日志文件名前缀
+    /// Префикс имени файла лога
     pub const DEFAULT_FILE_PREFIX: &str = "app";
     
-    /// 日志轮转类型
+    /// Типы ротации логов
     pub mod rotation {
         pub const HOURLY: &str = "hourly";
         pub const DAILY: &str = "daily";
@@ -139,54 +139,54 @@ pub mod log {
         pub const DEFAULT: &str = "daily";
     }
     
-    /// 默认最大文件大小(MB)
+    /// Максимальный размер файла лога (в МБ)
     pub const DEFAULT_MAX_FILE_SIZE: u64 = 100;
     
-    /// 默认最大文件数量
+    /// Максимальное количество файлов лога
     pub const DEFAULT_MAX_FILES: u32 = 30;
 }
 
-/// 注册表常量
+/// Константы реестра
 pub mod registry {
-    /// Windows Internet 设置注册表路径
+    /// Путь к реестру настроек интернета в Windows
     pub const INTERNET_SETTINGS: &str = r"Software\Microsoft\Windows\CurrentVersion\Internet Settings";
     
-    /// 代理开关键名
+    /// Имя ключа включения прокси
     pub const PROXY_ENABLE: &str = "ProxyEnable";
     
-    /// 代理服务器键名
+    /// Имя ключа сервера прокси
     pub const PROXY_SERVER: &str = "ProxyServer";
 }
 
-/// 服务器默认配置
+/// Конфигурация сервера по умолчанию
 pub mod server {
-    /// 默认主机地址
+    /// Адрес хоста по умолчанию
     pub const DEFAULT_HOST: &str = "127.0.0.1";
     
-    /// 默认端口
+    /// Порт по умолчанию
     pub const DEFAULT_PORT: u16 = 8080;
 }
 
-/// 数据库默认配置
+/// Конфигурация базы данных по умолчанию
 pub mod database {
-    /// 默认数据库连接URL
+    /// URL подключения к базе данных по умолчанию
     pub const DEFAULT_URL: &str = "sqlite://data.db";
 }
 
-/// JWT认证配置
+/// Конфигурация JWT аутентификации
 pub mod jwt {
-    /// 默认密钥(注意：生产环境应使用安全的随机密钥)
+    /// Секретный ключ по умолчанию (внимание: в производственной среде используйте безопасный случайный ключ)
     pub const DEFAULT_SECRET: &str = "your-secret-key";
     
-    /// 默认过期时间(秒)
-    pub const DEFAULT_EXPIRATION: i64 = 86400; // 24小时
+    /// Время истечения по умолчанию (в секундах)
+    pub const DEFAULT_EXPIRATION: i64 = 86400; // 24 часа
 }
 
-/// 速率限制配置
+/// Конфигурация ограничения скорости
 pub mod rate_limit {
-    /// 默认窗口时间(秒)
+    /// Время окна по умолчанию (в секундах)
     pub const DEFAULT_WINDOW_SECS: u64 = 60;
     
-    /// 默认最大请求数
+    /// Максимальное количество запросов по умолчанию
     pub const DEFAULT_MAX_REQUESTS: u64 = 100;
-} 
+}

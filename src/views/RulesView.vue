@@ -3,13 +3,13 @@
     <n-card class="rules-card" :bordered="false">
       <template #header>
         <div class="card-header">
-          <h2>规则列表</h2>
+          <h2>Список правил</h2>
           <n-space>
             <n-button type="primary" @click="fetchRules" :loading="loading">
               <template #icon>
                 <n-icon><refresh-outline /></n-icon>
               </template>
-              刷新
+              Обновить
             </n-button>
           </n-space>
         </div>
@@ -26,7 +26,7 @@
             striped
           />
         </div>
-        <n-empty v-else description="暂无规则数据" />
+        <n-empty v-else description="Нет данных о правилах" />
       </n-spin>
     </n-card>
   </div>
@@ -49,10 +49,10 @@ interface Rule {
 
 const rules = ref<Rule[]>([])
 
-// 定义表格列
+// Определение столбцов таблицы
 const columns: DataTableColumns<Rule> = [
   {
-    title: '类型',
+    title: 'Тип',
     key: 'type',
     width: 120,
     render(row: Rule) {
@@ -79,10 +79,10 @@ const columns: DataTableColumns<Rule> = [
     },
   },
   {
-    title: '规则内容',
+    title: 'Содержание правила',
     key: 'payload',
     render(row: Rule) {
-      // 判断是否包含规则集
+      // Проверка на наличие набора правил
       if (row.payload.includes('rule_set=')) {
         const parts = row.payload.split('rule_set=')[1].replace(/\[|\]/g, '').split(' ')
         return h('div', {}, [
@@ -107,11 +107,11 @@ const columns: DataTableColumns<Rule> = [
     },
   },
   {
-    title: '目标代理',
+    title: 'Целевой прокси',
     key: 'proxy',
     width: 180,
     render(row: Rule) {
-      // 提取代理名称
+      // Извлечение имени прокси
       let proxyName = row.proxy
       if (proxyName.startsWith('route(') && proxyName.endsWith(')')) {
         proxyName = proxyName.substring(6, proxyName.length - 1)
@@ -120,13 +120,13 @@ const columns: DataTableColumns<Rule> = [
       let color: 'default' | 'error' | 'primary' | 'success' | 'info' | 'warning' = 'default'
       if (proxyName === 'reject') {
         color = 'error'
-      } else if (proxyName === '本地直连') {
+      } else if (proxyName === 'local') {
         color = 'success'
       } else if (proxyName === 'hijack-dns' || proxyName === 'sniff') {
         color = 'info'
       } else if (proxyName.includes('Google') || proxyName.includes('YouTube')) {
         color = 'warning'
-      } else if (proxyName.includes('手动切换') || proxyName.includes('自动选择')) {
+      } else if (proxyName.includes('manual') || proxyName.includes('auto')) {
         color = 'primary'
       }
 
@@ -145,26 +145,26 @@ const columns: DataTableColumns<Rule> = [
   },
 ]
 
-// 分页设置
+// Настройки пагинации
 const pagination = {
   pageSize: 10,
 }
 
-// 获取规则列表
+// Получение списка правил
 const fetchRules = async () => {
   loading.value = true
   try {
     const response = await tauriApi.proxy.getRules()
-    console.log('规则数据:', response)
+    console.log('Данные правил:', response)
     if (response && response.rules) {
       rules.value = response.rules
-      message.success(`成功获取 ${rules.value.length} 条规则`)
+      message.success(`Успешно получено ${rules.value.length} правил`)
     } else {
-      message.error('获取规则失败：返回数据格式错误')
+      message.error('Не удалось получить правила: неверный формат данных')
     }
   } catch (error) {
-    console.error('获取规则失败:', error)
-    message.error(`获取规则失败: ${error}`)
+    console.error('Не удалось получить правила:', error)
+    message.error(`Не удалось получить правила: ${error}`)
   } finally {
     loading.value = false
   }

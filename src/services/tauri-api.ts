@@ -1,6 +1,6 @@
 import { invoke } from '@tauri-apps/api/core'
 
-// 定义接口类型
+// Определение типов интерфейсов
 interface ProxyData {
   type: string
   name: string
@@ -28,99 +28,99 @@ interface VersionInfo {
   cgo?: string
 }
 
-// 内核管理相关接口
+// Интерфейсы для управления ядром
 export const kernelApi = {
-  // 获取内存使用情况
+  // Получение использования памяти
   getMemoryUsage: () => invoke<string>('get_memory_usage'),
 
-  // 获取流量数据
+  // Получение данных о трафике
   getTrafficData: () => invoke<string>('get_traffic_data'),
 
-  // 启动内核
+  // Запуск ядра
   startKernel: () => invoke<void>('start_kernel'),
 
-  // 停止内核
+  // Остановка ядра
   stopKernel: () => invoke<void>('stop_kernel'),
 
-  // 重启内核
+  // Перезапуск ядра
   restartKernel: () => invoke<void>('restart_kernel'),
 
-  // 获取进程状态
+  // Получение статуса процесса
   getProcessStatus: () => invoke<string>('get_process_status'),
 
-  // 检查内核版本
+  // Проверка версии ядра
   checkKernelVersion: () => invoke<string>('check_kernel_version'),
 
-  // 启动WebSocket数据中继
+  // Запуск реле данных WebSocket
   startWebsocketRelay: () => invoke<void>('start_websocket_relay'),
 }
 
-// 代理模式相关接口
+// Интерфейсы для управления прокси
 export const proxyApi = {
-  // 设置系统代理模式
+  // Установка системного прокси режима
   setSystemProxy: () => invoke<void>('set_system_proxy'),
 
-  // 设置 TUN 代理模式
+  // Установка режима TUN прокси
   setTunProxy: () => invoke<void>('set_tun_proxy'),
 
-  // 检查管理员权限
+  // Проверка прав администратора
   checkAdmin: () => invoke<boolean>('check_admin'),
 
-  // 以管理员权限重启
+  // Перезапуск с правами администратора
   restartAsAdmin: () => invoke<void>('restart_as_admin'),
 
-  // 切换 IP 版本
+  // Переключение версии IP
   toggleIpVersion: (preferIpv6: boolean) => invoke<void>('toggle_ip_version', { preferIpv6 }),
 
-  // 切换代理模式（global, rule, tun）
+  // Переключение режима прокси (global, rule, tun)
   toggleProxyMode: (mode: string) => invoke<string>('toggle_proxy_mode', { mode }),
 
-  // 获取当前代理模式
+  // Получение текущего режима прокси
   getCurrentProxyMode: () => invoke<string>('get_current_proxy_mode'),
 
-  // 获取代理列表
+  // Получение списка прокси
   getProxies: () => invoke<ProxiesData>('get_proxies'),
 
-  // 切换代理
+  // Переключение прокси
   changeProxy: (group: string, proxy: string) => invoke<void>('change_proxy', { group, proxy }),
 
-  // 测试节点延迟
+  // Тестирование задержки узла
   testNodeDelay: (name: string, server?: string) =>
     invoke<NodeDelay>('test_node_delay', { name, server }),
 
-  // 批量测试节点延迟
+  // Пакетное тестирование задержки узлов
   batchTestNodes: (nodes: string[], server?: string) =>
     invoke<void>('batch_test_nodes', { nodes, server }),
 
-  // 获取版本信息
+  // Получение информации о версии
   getVersionInfo: () => invoke<VersionInfo>('get_version_info'),
 
-  // 获取规则列表
+  // Получение списка правил
   getRules: () =>
     invoke<{ rules: Array<{ type: string; payload: string; proxy: string }> }>('get_rules'),
 }
 
-// 订阅相关接口
+// Интерфейсы для управления подписками
 export const subscriptionApi = {
-  // 下载订阅
+  // Загрузка подписки
   downloadSubscription: (url: string) => invoke<void>('download_subscription', { url }),
 
-  // 下载最新内核
+  // Загрузка последней версии ядра
   downloadLatestKernel: () => invoke<void>('download_latest_kernel'),
 
-  // 获取当前配置
+  // Получение текущей конфигурации
   getCurrentConfig: () => invoke<string>('get_current_config'),
 }
 
-// 统一导出所有 API
+// Экспорт всех API
 export const tauriApi = {
   kernel: kernelApi,
   proxy: proxyApi,
   subscription: subscriptionApi,
 
-  // 更新相关 API
+  // API для обновлений
   update: {
-    // 检查更新
+    // Проверка обновлений
     checkUpdate: async (currentVersion: string) => {
       return await invoke<{
         latest_version: string
@@ -129,7 +129,7 @@ export const tauriApi = {
       }>('check_update', { currentVersion })
     },
 
-    // 下载并安装更新
+    // Загрузка и установка обновлений
     downloadAndInstallUpdate: async (downloadUrl: string) => {
       return await invoke<void>('download_and_install_update', { downloadUrl })
     },

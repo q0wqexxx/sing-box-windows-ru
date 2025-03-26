@@ -2,7 +2,7 @@ import { MessageType } from '@/stores/infoStore'
 import { useInfoStore } from '@/stores/infoStore'
 
 /**
- * 通知服务，提供统一的消息通知功能
+ * Сервис уведомлений, предоставляющий единый функционал для уведомлений
  */
 export class NotificationService {
   private static instance: NotificationService
@@ -10,11 +10,11 @@ export class NotificationService {
   private infoStore = useInfoStore()
 
   private constructor() {
-    // 私有构造函数，防止外部直接创建实例
+    // Приватный конструктор, предотвращающий создание экземпляра извне
   }
 
   /**
-   * 获取NotificationService单例
+   * Получение единственного экземпляра NotificationService
    */
   public static getInstance(): NotificationService {
     if (!NotificationService.instance) {
@@ -24,8 +24,8 @@ export class NotificationService {
   }
 
   /**
-   * 设置消息处理函数
-   * @param handler 处理消息的回调函数
+   * Установка обработчика сообщений
+   * @param handler Функция обратного вызова для обработки сообщений
    */
   public setMessageHandler(handler: (type: MessageType, content: string) => void): void {
     this.messageHandler = handler
@@ -33,47 +33,47 @@ export class NotificationService {
   }
 
   /**
-   * 显示成功消息
-   * @param content 消息内容
+   * Показ успешного сообщения
+   * @param content Содержание сообщения
    */
   public success(content: string): void {
     this.showMessage('success', content)
   }
 
   /**
-   * 显示信息消息
-   * @param content 消息内容
+   * Показ информационного сообщения
+   * @param content Содержание сообщения
    */
   public info(content: string): void {
     this.showMessage('info', content)
   }
 
   /**
-   * 显示警告消息
-   * @param content 消息内容
+   * Показ предупреждающего сообщения
+   * @param content Содержание сообщения
    */
   public warning(content: string): void {
     this.showMessage('warning', content)
   }
 
   /**
-   * 显示错误消息
-   * @param content 消息内容
+   * Показ сообщения об ошибке
+   * @param content Содержание сообщения
    */
   public error(content: string): void {
     this.showMessage('error', content)
   }
 
   /**
-   * 显示消息的通用方法
-   * @param type 消息类型
-   * @param content 消息内容
+   * Общий метод для показа сообщений
+   * @param type Тип сообщения
+   * @param content Содержание сообщения
    */
   private showMessage(type: MessageType, content: string): void {
     if (this.messageHandler) {
       this.messageHandler(type, content)
     } else {
-      // 如果没有设置处理函数，使用InfoStore提供的默认处理
+      // Если обработчик не установлен, используем обработчик по умолчанию из InfoStore
       this.infoStore.showMessage(type, content)
     }
   }

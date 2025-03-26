@@ -1,6 +1,6 @@
 <template>
   <div class="log-container">
-    <!-- 日志头部卡片 -->
+    <!-- Заголовок карточки логов -->
     <n-card class="log-header-card" :bordered="false">
       <n-space align="center" justify="space-between">
         <div class="title-container">
@@ -8,22 +8,22 @@
             <n-icon size="24" class="card-icon">
               <document-text-outline />
             </n-icon>
-            日志查看
+            Просмотр логов
           </n-h3>
           <n-tag :bordered="false" type="info" size="medium" class="log-count-tag">
-            {{ displayedLogs.length }}/{{ totalLogs }} 条记录
+            {{ displayedLogs.length }}/{{ totalLogs }} записей
           </n-tag>
         </div>
         <n-space :size="12">
           <n-switch v-model:value="autoScroll" size="medium" class="auto-scroll-switch">
-            <template #checked>自动滚动</template>
-            <template #unchecked>手动滚动</template>
+            <template #checked>Автопрокрутка</template>
+            <template #unchecked>Ручная прокрутка</template>
           </n-switch>
 
           <n-select
             v-model:value="filterType"
             :options="logTypeOptions"
-            placeholder="筛选日志类型"
+            placeholder="Фильтр по типу"
             size="medium"
             style="width: 120px"
             class="log-filter-select"
@@ -45,7 +45,7 @@
                   </template>
                 </n-button>
               </template>
-              清空日志
+              Очистить логи
             </n-tooltip>
 
             <n-tooltip trigger="hover" placement="top">
@@ -63,7 +63,7 @@
                   </template>
                 </n-button>
               </template>
-              复制日志
+              Копировать логи
             </n-tooltip>
 
             <n-tooltip trigger="hover" placement="top">
@@ -81,18 +81,18 @@
                   </template>
                 </n-button>
               </template>
-              导出日志
+              Экспортировать логи
             </n-tooltip>
           </n-space>
         </n-space>
       </n-space>
     </n-card>
 
-    <!-- 日志内容卡片 -->
+    <!-- Содержимое карточки логов -->
     <n-card class="log-content-card" :bordered="false">
       <div class="log-content-wrapper">
         <div v-if="displayedLogs.length">
-          <!-- 使用 Naive UI 的虚拟列表组件 -->
+          <!-- Использование компонента виртуального списка Naive UI -->
           <n-virtual-list
             ref="virtualListRef"
             class="log-virtual-list"
@@ -115,7 +115,7 @@
             </template>
           </n-virtual-list>
         </div>
-        <n-empty v-else description="暂无日志记录" class="log-empty" />
+        <n-empty v-else description="Нет записей логов" class="log-empty" />
       </div>
     </n-card>
   </div>
@@ -145,7 +145,7 @@ const autoScroll = ref(true)
 const filterType = ref<string | null>(null)
 const displayedLogs = ref<Log[]>([])
 
-// 格式化日志数据，添加key属性以适配虚拟列表
+// Форматирование данных логов, добавление свойства key для поддержки виртуального списка
 const formattedLogs = computed<FormattedLog[]>(() => {
   return displayedLogs.value.map((log, index) => ({
     ...log,
@@ -153,20 +153,20 @@ const formattedLogs = computed<FormattedLog[]>(() => {
   }))
 })
 
-// 处理虚拟列表的滚动事件
+// Обработка события прокрутки виртуального списка
 const handleVirtualScroll = (e: Event) => {
   const target = e.target as HTMLElement
   if (!target) return
 
   const { scrollTop, scrollHeight, clientHeight } = target
 
-  // 如果用户向上滚动超过一定距离，关闭自动滚动
+  // Если пользователь прокрутил вверх на определенное расстояние, отключаем автопрокрутку
   if (scrollHeight - scrollTop - clientHeight > 100) {
     autoScroll.value = false
   }
 }
 
-// 监听日志变化
+// Слушаем изменения логов
 watch(
   () => infoStore.logs,
   async (newLogs) => {
@@ -179,7 +179,7 @@ watch(
   { deep: true },
 )
 
-// 监听筛选条件变化
+// Слушаем изменения фильтра
 watch(filterType, () => {
   updateDisplayedLogs()
   nextTick(() => {
@@ -189,7 +189,7 @@ watch(filterType, () => {
   })
 })
 
-// 监听自动滚动状态变化
+// Слушаем изменения состояния автопрокрутки
 watch(autoScroll, (newValue) => {
   if (newValue) {
     scrollToBottom()
@@ -205,7 +205,7 @@ onMounted(() => {
   })
 })
 
-// 计算总日志数
+// Подсчет общего количества логов
 const totalLogs = computed(() => {
   return filterType.value
     ? infoStore.logs.filter((log: Log) => log.type === filterType.value).length
@@ -213,35 +213,35 @@ const totalLogs = computed(() => {
 })
 
 const logTypeOptions = [
-  { label: '全部', value: null },
-  { label: '信息', value: 'info' },
-  { label: '警告', value: 'warning' },
-  { label: '错误', value: 'error' },
-  { label: '成功', value: 'success' },
+  { label: 'Все', value: null },
+  { label: 'Информация', value: 'info' },
+  { label: 'Предупреждение', value: 'warning' },
+  { label: 'Ошибка', value: 'error' },
+  { label: 'Успех', value: 'success' },
 ]
 
-// 更新显示的日志
+// Обновление отображаемых логов
 const updateDisplayedLogs = () => {
   displayedLogs.value = filterType.value
     ? infoStore.logs.filter((log) => log.type === filterType.value)
     : infoStore.logs
 }
 
-// 滚动到底部
+// Прокрутка до низа
 const scrollToBottom = () => {
   nextTick(() => {
     if (virtualListRef.value) {
-      // 使用虚拟列表组件提供的scrollTo方法滚动到最底部
+      // Использование метода scrollTo компонента виртуального списка для прокрутки до низа
       virtualListRef.value.scrollTo({ index: displayedLogs.value.length - 1 })
     }
   })
 }
 
 const clearLogs = () => {
-  // 使用store提供的方法清空日志
+  // Использование метода store для очистки логов
   infoStore.clearLogs()
   displayedLogs.value = []
-  message.success('日志已清空')
+  message.success('Логи очищены')
 }
 
 const copyLogs = () => {
@@ -249,7 +249,7 @@ const copyLogs = () => {
     .map((log) => `[${formatTime(log.timestamp)}] [${log.type}] ${log.payload}`)
     .join('\n')
   navigator.clipboard.writeText(logText)
-  message.success('日志已复制到剪贴板')
+  message.success('Логи скопированы в буфер обмена')
 }
 
 const exportLogs = () => {
@@ -265,7 +265,7 @@ const exportLogs = () => {
   a.click()
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
-  message.success('日志已导出')
+  message.success('Логи экспортированы')
 }
 
 const formatTime = (timestamp: number, showSeconds = false) => {

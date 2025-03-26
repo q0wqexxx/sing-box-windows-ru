@@ -1,6 +1,6 @@
 <template>
   <div class="proxy-container">
-    <!-- 顶部标题卡片 -->
+    <!-- Верхняя карточка заголовка -->
     <n-card class="proxy-card" :bordered="false">
       <template #header>
         <div class="card-header">
@@ -9,11 +9,11 @@
               <n-icon size="24" class="card-icon">
                 <swap-horizontal-outline />
               </n-icon>
-              代理设置
+              Настройки прокси
             </n-h3>
           </div>
           <div class="header-right">
-            <!-- 代理模式切换 -->
+            <!-- Переключение режима прокси -->
             <n-dropdown :options="proxyModeOptions" @select="handleProxyModeChange" trigger="click">
               <n-tooltip trigger="hover" placement="top">
                 <template #trigger>
@@ -29,11 +29,11 @@
                     </n-icon>
                   </n-tag>
                 </template>
-                点击切换代理模式
+                Нажмите для переключения режима прокси
               </n-tooltip>
             </n-dropdown>
 
-            <!-- 刷新按钮 -->
+            <!-- Кнопка обновления -->
             <n-tooltip trigger="hover" placement="top">
               <template #trigger>
                 <n-button
@@ -49,61 +49,61 @@
                   </template>
                 </n-button>
               </template>
-              刷新代理列表
+              Обновить список прокси
             </n-tooltip>
           </div>
         </div>
       </template>
     </n-card>
 
-    <!-- 代理模式切换对话框 -->
+    <!-- Диалог переключения режима прокси -->
     <n-modal
       v-model:show="showModeChangeModal"
       preset="dialog"
-      :title="`切换到${targetProxyMode ? getProxyModeText(targetProxyMode) : ''}`"
+      :title="`Переключение на ${targetProxyMode ? getProxyModeText(targetProxyMode) : ''}`"
     >
       <template #header>
         <div class="modal-header">
           <n-icon size="22" class="modal-icon">
             <information-circle-outline />
           </n-icon>
-          <span>切换到{{ targetProxyMode ? getProxyModeText(targetProxyMode) : '' }}</span>
+          <span>Переключение на {{ targetProxyMode ? getProxyModeText(targetProxyMode) : '' }}</span>
         </div>
       </template>
-      <div class="modal-content">切换代理模式需要重启内核才能生效。确定要切换并重启内核吗？</div>
+      <div class="modal-content">Переключение режима прокси требует перезапуска ядра для вступления в силу. Вы уверены, что хотите переключить и перезапустить ядро?</div>
       <template #action>
         <div class="modal-footer">
           <n-space justify="end">
-            <n-button @click="showModeChangeModal = false">取消</n-button>
-            <n-button type="primary" :loading="isChangingMode" @click="confirmProxyModeChange">
-              确认切换
-            </n-button>
-          </n-space>
+            <n-button @click="showModeChangeModal = false">Отмена</н-button>
+            <н-button type="primary" :loading="isChangingMode" @click="confirmProxyModeChange">
+              Подтвердить переключение
+            </н-button>
+          </н-space>
         </div>
       </template>
-    </n-modal>
+    </н-modal>
 
-    <!-- 代理列表卡片 -->
-    <n-spin :show="isLoading">
-      <n-card class="proxy-list-card" :bordered="false">
-        <n-tabs type="segment" animated class="proxy-tabs" v-model:value="activeTab">
-          <!-- 全局设置选项卡 -->
-          <n-tab-pane name="global" tab="全局设置">
+    <!-- Карточка списка прокси -->
+    <н-spin :show="isLoading">
+      <н-card class="proxy-list-card" :bordered="false">
+        <н-tabs type="segment" animated class="proxy-tabs" v-model:value="activeTab">
+          <!-- Вкладка глобальных настроек -->
+          <н-tab-pane name="global" tab="Глобальные настройки">
             <div v-if="globalGroup" class="proxy-group">
               <div class="proxy-group-info">
-                <n-space align="center" :size="12">
-                  <n-tag :bordered="false" type="success" size="medium" class="proxy-tag">
-                    当前使用: {{ globalGroup.now }}
-                  </n-tag>
-                  <n-tag :bordered="false" type="info" size="medium" class="proxy-tag">
-                    {{ globalGroup.all.length }} 个可选项
-                  </n-tag>
-                </n-space>
+                <н-space align="center" :size="12">
+                  <н-tag :bordered="false" type="success" size="medium" class="proxy-tag">
+                    Текущий: {{ globalGroup.now }}
+                  </н-tag>
+                  <н-tag :bordered="false" type="info" size="medium" class="proxy-tag">
+                    {{ globalGroup.all.length }} доступных опций
+                  </н-tag>
+                </н-space>
               </div>
 
-              <n-grid :x-gap="16" :y-gap="16" :cols="gridCols" responsive="screen">
-                <n-grid-item v-for="(proxy, i) in globalGroup.all" :key="i">
-                  <n-card
+              <н-grid :x-gap="16" :y-gap="16" :cols="gridCols" responsive="screen">
+                <н-grid-item v-for="(proxy, i) in globalGroup.all" :key="i">
+                  <н-card
                     :class="{
                       'proxy-node-card': true,
                       'proxy-node-card-active': globalGroup.now === proxy,
@@ -111,14 +111,14 @@
                     :bordered="false"
                     hoverable
                   >
-                    <n-space vertical :size="14">
-                      <n-flex justify="space-between" align="center">
+                    <н-space vertical :size="14">
+                      <н-flex justify="space-between" align="center">
                         <div class="proxy-name-container">
-                          <n-ellipsis style="max-width: 100%" :tooltip="{ width: 'trigger' }">
+                          <н-ellipsis style="max-width: 100%" :tooltip="{ width: 'trigger' }">
                             {{ proxy }}
-                          </n-ellipsis>
+                          </н-ellipsis>
                         </div>
-                        <n-tag
+                        <н-tag
                           :type="getProxyTypeColor(getProxyType(proxy))"
                           size="small"
                           :bordered="false"
@@ -126,11 +126,11 @@
                           class="type-tag"
                         >
                           {{ getProxyType(proxy) }}
-                        </n-tag>
-                      </n-flex>
+                        </н-tag>
+                      </н-flex>
 
-                      <n-flex justify="space-between" align="center">
-                        <n-button
+                      <н-flex justify="space-between" align="center">
+                        <н-button
                           @click="changeProxy('GLOBAL', proxy)"
                           :type="globalGroup.now === proxy ? 'default' : 'primary'"
                           size="small"
@@ -139,25 +139,25 @@
                           class="proxy-button"
                         >
                           <template #icon>
-                            <n-icon>
+                            <н-icon>
                               <checkmark-circle-outline v-if="globalGroup.now === proxy" />
                               <swap-horizontal-outline v-else />
-                            </n-icon>
+                            </н-icon>
                           </template>
-                          {{ globalGroup.now === proxy ? '使用中' : '切换' }}
-                        </n-button>
-                      </n-flex>
-                    </n-space>
-                  </n-card>
-                </n-grid-item>
-              </n-grid>
+                          {{ globalGroup.now === proxy ? 'Используется' : 'Переключить' }}
+                        </н-button>
+                      </н-flex>
+                    </н-space>
+                  </н-card>
+                </н-grid-item>
+              </н-grid>
             </div>
-          </n-tab-pane>
+          </н-tab-pane>
 
-          <!-- 分组选项卡 -->
-          <n-tab-pane name="groups" tab="代理分组">
-            <n-tabs type="line" animated v-model:value="activeGroupTab">
-              <n-tab-pane
+          <!-- Вкладка групп -->
+          <н-tab-pane name="groups" tab="Группы прокси">
+            <н-tabs type="line" animated v-model:value="activeGroupTab">
+              <н-tab-pane
                 v-for="(group, index) in proxyGroups"
                 :key="index"
                 :name="group.name"
@@ -165,22 +165,22 @@
               >
                 <div class="proxy-group">
                   <div class="proxy-group-info">
-                    <n-space align="center" :size="12">
-                      <n-tag :bordered="false" type="success" size="medium" class="proxy-tag">
-                        当前节点: {{ group.now }}
-                      </n-tag>
-                      <n-tag :bordered="false" type="info" size="medium" class="proxy-tag">
-                        {{ group.all.length }} 个节点
-                      </n-tag>
-                      <n-tag :bordered="false" type="warning" size="medium" class="proxy-tag">
+                    <н-space align="center" :size="12">
+                      <н-tag :bordered="false" type="success" size="medium" class="proxy-tag">
+                        Текущий узел: {{ group.now }}
+                      </н-tag>
+                      <н-tag :bordered="false" type="info" size="medium" class="proxy-tag">
+                        {{ group.all.length }} узлов
+                      </н-tag>
+                      <н-tag :bordered="false" type="warning" size="medium" class="proxy-tag">
                         {{ group.type }}
-                      </n-tag>
-                    </n-space>
+                      </н-tag>
+                    </н-space>
                   </div>
 
-                  <n-grid :x-gap="16" :y-gap="16" :cols="gridCols" responsive="screen">
-                    <n-grid-item v-for="(proxy, i) in group.all" :key="i">
-                      <n-card
+                  <н-grid :x-gap="16" :y-gap="16" :cols="gridCols" responsive="screen">
+                    <н-grid-item v-for="(proxy, i) in group.all" :key="i">
+                      <н-card
                         :class="{
                           'proxy-node-card': true,
                           'proxy-node-card-active': group.now === proxy,
@@ -188,14 +188,14 @@
                         :bordered="false"
                         hoverable
                       >
-                        <n-space vertical :size="14">
-                          <n-flex justify="space-between" align="center">
+                        <н-space vertical :size="14">
+                          <н-flex justify="space-between" align="center">
                             <div class="proxy-name-container">
-                              <n-ellipsis style="max-width: 100%" :tooltip="{ width: 'trigger' }">
+                              <н-ellipsis style="max-width: 100%" :tooltip="{ width: 'trigger' }">
                                 {{ proxy }}
-                              </n-ellipsis>
+                              </н-ellipsis>
                             </div>
-                            <n-tag
+                            <н-tag
                               :type="getNodeDelayType(getNodeDelay(proxy))"
                               size="small"
                               :bordered="false"
@@ -203,13 +203,13 @@
                               class="delay-tag"
                             >
                               {{
-                                getNodeDelay(proxy) === 0 ? '未测速' : getNodeDelay(proxy) + 'ms'
+                                getNodeDelay(proxy) === 0 ? 'Не тестировалось' : getNodeDelay(proxy) + 'мс'
                               }}
-                            </n-tag>
-                          </n-flex>
+                            </н-tag>
+                          </н-flex>
 
-                          <n-flex justify="space-between" align="center">
-                            <n-button
+                          <н-flex justify="space-between" align="center">
+                            <н-button
                               @click="changeProxy(group.name, proxy)"
                               :type="group.now === proxy ? 'default' : 'primary'"
                               size="small"
@@ -218,14 +218,14 @@
                               class="proxy-button"
                             >
                               <template #icon>
-                                <n-icon>
+                                <н-icon>
                                   <checkmark-circle-outline v-if="group.now === proxy" />
                                   <swap-horizontal-outline v-else />
-                                </n-icon>
+                                </н-icon>
                               </template>
-                              {{ group.now === proxy ? '使用中' : '切换' }}
-                            </n-button>
-                            <n-button
+                              {{ group.now === proxy ? 'Используется' : 'Переключить' }}
+                            </н-button>
+                            <н-button
                               @click="testNodeDelay(proxy)"
                               :loading="testingNodes[proxy]"
                               secondary
@@ -236,36 +236,36 @@
                               v-if="isRealNode(proxy)"
                             >
                               <template #icon>
-                                <n-icon><speedometer-outline /></n-icon>
+                                <н-icon><speedometer-outline /></н-icon>
                               </template>
-                              测速
-                            </n-button>
-                          </n-flex>
-                        </n-space>
-                      </n-card>
-                    </n-grid-item>
-                  </n-grid>
+                              Тест скорости
+                            </н-button>
+                          </н-flex>
+                        </н-space>
+                      </н-card>
+                    </н-grid-item>
+                  </н-grid>
                 </div>
-              </n-tab-pane>
-            </n-tabs>
-          </n-tab-pane>
+              </н-tab-pane>
+            </н-tabs>
+          </н-tab-pane>
 
-          <!-- 节点选项卡 -->
-          <n-tab-pane name="nodes" tab="所有节点">
+          <!-- Вкладка узлов -->
+          <н-tab-pane name="nodes" tab="Все узлы">
             <div class="nodes-filter">
-              <n-space :size="16" align="center">
-                <n-input
+              <н-space :size="16" align="center">
+                <н-input
                   v-model:value="searchText"
-                  placeholder="搜索节点名称..."
+                  placeholder="Поиск по имени узла..."
                   clearable
                   class="search-input"
                 >
                   <template #prefix>
-                    <n-icon><search-outline /></n-icon>
+                    <н-icon><search-outline /></н-icon>
                   </template>
-                </n-input>
+                </н-input>
 
-                <n-button
+                <н-button
                   @click="batchTestAllNodes"
                   :loading="batchTesting"
                   type="primary"
@@ -273,14 +273,14 @@
                   size="medium"
                 >
                   <template #icon>
-                    <n-icon><flash-outline /></n-icon>
+                    <н-icon><flash-outline /></н-icon>
                   </template>
-                  批量测速
-                </n-button>
-              </n-space>
+                  Тестировать все узлы
+                </н-button>
+              </н-space>
 
-              <!-- 批量测试进度条 -->
-              <n-progress
+              <!-- Прогресс бар тестирования -->
+              <н-progress
                 v-if="batchTesting"
                 type="line"
                 :percentage="batchTestProgress.percentage"
@@ -288,38 +288,38 @@
                 class="batch-test-progress"
               >
                 {{ batchTestProgress.text }}
-              </n-progress>
+              </н-progress>
             </div>
 
-            <n-grid :x-gap="16" :y-gap="16" :cols="gridCols" responsive="screen">
-              <n-grid-item v-for="(node, i) in filteredNodes" :key="i">
-                <n-card class="proxy-node-card node-card" :bordered="false" hoverable>
-                  <n-space vertical :size="14">
-                    <n-flex justify="space-between" align="center">
+            <н-grid :x-gap="16" :y-gap="16" :cols="gridCols" responsive="screen">
+              <н-grid-item v-for="(node, i) in filteredNodes" :key="i">
+                <н-card class="proxy-node-card node-card" :bordered="false" hoverable>
+                  <н-space vertical :size="14">
+                    <н-flex justify="space-between" align="center">
                       <div class="proxy-name-container">
-                        <n-ellipsis style="max-width: 100%" :tooltip="{ width: 'trigger' }">
+                        <н-ellipsis style="max-width: 100%" :tooltip="{ width: 'trigger' }">
                           {{ node.name }}
-                        </n-ellipsis>
+                        </н-ellipsis>
                       </div>
-                      <n-tag
+                      <н-tag
                         :type="getNodeDelayType(node.delay)"
                         size="small"
                         :bordered="false"
                         round
                         class="delay-tag"
                       >
-                        {{ node.delay === 0 ? '未测速' : node.delay + 'ms' }}
-                      </n-tag>
-                    </n-flex>
+                        {{ node.delay === 0 ? 'Не тестировалось' : node.delay + 'мс' }}
+                      </н-tag>
+                    </н-flex>
 
-                    <n-flex align="center" class="node-type">
-                      <n-tag size="small" :bordered="false" :type="getProxyTypeColor(node.type)">
+                    <н-flex align="center" class="node-type">
+                      <н-tag size="small" :bordered="false" :type="getProxyTypeColor(node.type)">
                         {{ node.type }}
-                      </n-tag>
-                    </n-flex>
+                      </н-tag>
+                    </н-flex>
 
-                    <n-flex justify="center" align="center">
-                      <n-button
+                    <н-flex justify="center" align="center">
+                      <н-button
                         @click="testNodeDelay(node.name)"
                         :loading="testingNodes[node.name]"
                         secondary
@@ -329,25 +329,25 @@
                         class="proxy-button"
                       >
                         <template #icon>
-                          <n-icon><speedometer-outline /></n-icon>
+                          <н-icon><speedometer-outline /></н-icon>
                         </template>
-                        测速
-                      </n-button>
-                    </n-flex>
-                  </n-space>
-                </n-card>
-              </n-grid-item>
-            </n-grid>
+                        Тест скорости
+                      </н-button>
+                    </н-flex>
+                  </н-space>
+                </н-card>
+              </н-grid-item>
+            </н-grid>
 
-            <n-empty
+            <н-empty
               v-if="filteredNodes.length === 0"
-              description="未找到节点"
+              description="Узлы не найдены"
               class="empty-container"
             />
-          </n-tab-pane>
-        </n-tabs>
-      </n-card>
-    </n-spin>
+          </н-tab-pane>
+        </н-tabs>
+      </н-card>
+    </н-spin>
   </div>
 </template>
 
@@ -372,7 +372,7 @@ import { Component } from 'vue'
 import { tauriApi } from '@/services/tauri-api'
 import { listen } from '@tauri-apps/api/event'
 
-// 接口定义
+// Определение интерфейсов
 interface ProxyHistory {
   time: string
   delay: number
@@ -397,63 +397,63 @@ interface NodeInfo {
   delay: number
 }
 
-// 状态定义
+// Определение состояния
 const message = useMessage()
 const isLoading = ref(false)
 const { width } = useWindowSize()
 
-// 代理数据
+// Данные прокси
 const rawProxies = ref<Record<string, ProxyData>>({})
 const globalGroup = ref<ProxyData | null>(null)
 const proxyGroups = ref<ProxyData[]>([])
 const allNodes = ref<NodeInfo[]>([])
 const testingNodes = reactive<Record<string, boolean>>({})
-const currentProxyMode = ref('rule') // 默认为规则模式
+const currentProxyMode = ref('rule') // По умолчанию режим правил
 
-// 代理模式切换相关
+// Переключение режима прокси
 const isChangingMode = ref(false)
 const showModeChangeModal = ref(false)
 const targetProxyMode = ref('')
 
-// 批量测试相关
+// Тестирование всех узлов
 const batchTesting = ref(false)
 const batchTestProgress = reactive({
   percentage: 0,
-  text: '准备测试...',
+  text: 'Подготовка к тестированию...',
   current: 0,
   total: 0,
 })
 
-// 注册事件监听器
+// Регистрация слушателей событий
 let unlistenTestProgress: (() => void) | null = null
 let unlistenTestResult: (() => void) | null = null
 let unlistenTestComplete: (() => void) | null = null
 
-// 代理模式选项
+// Опции режима прокси
 const proxyModeOptions = [
   {
-    label: '全局模式',
+    label: 'Глобальный режим',
     key: 'global',
     icon: renderIcon(GlobeOutline),
   },
   {
-    label: '规则模式',
+    label: 'Режим правил',
     key: 'rule',
     icon: renderIcon(LayersOutline),
   },
 ]
 
-// 动态渲染图标的辅助函数
+// Вспомогательная функция для динамического рендеринга иконок
 function renderIcon(icon: Component) {
   return () => h('div', { class: 'dropdown-option-icon' }, h(icon))
 }
 
-// 选项卡状态
+// Состояние вкладок
 const activeTab = ref('global')
 const activeGroupTab = ref('')
 const searchText = ref('')
 
-// 根据窗口宽度调整网格列数
+// Настройка количества колонок в сетке в зависимости от ширины окна
 const gridCols = computed(() => {
   if (width.value < 640) return 1
   if (width.value < 960) return 2
@@ -461,92 +461,92 @@ const gridCols = computed(() => {
   return 4
 })
 
-// 过滤节点
+// Фильтрация узлов
 const filteredNodes = computed(() => {
   if (!searchText.value) return allNodes.value
   const keyword = searchText.value.toLowerCase()
   return allNodes.value.filter((node) => node.name.toLowerCase().includes(keyword))
 })
 
-// 生命周期钩子
+// Жизненные циклы
 onMounted(() => {
   init()
-  // 读取当前代理模式
+  // Получение текущего режима прокси
   getCurrentProxyMode()
-  // 注册事件监听器
+  // Регистрация слушателей событий
   setupEventListeners()
 })
 
 onUnmounted(() => {
-  // 清理事件监听器
+  // Очистка слушателей событий
   if (unlistenTestProgress) unlistenTestProgress()
   if (unlistenTestResult) unlistenTestResult()
   if (unlistenTestComplete) unlistenTestComplete()
 })
 
-// 设置事件监听器
+// Настройка слушателей событий
 const setupEventListeners = async () => {
   unlistenTestProgress = await listen('test-nodes-progress', (event) => {
     const data = event.payload as any
     batchTestProgress.current = data.current
     batchTestProgress.total = data.total
     batchTestProgress.percentage = (data.current / data.total) * 100
-    batchTestProgress.text = `测试中: ${data.current}/${data.total} (${data.node})`
+    batchTestProgress.text = `Тестирование: ${data.current}/${data.total} (${data.node})`
   })
 
   unlistenTestResult = await listen('test-node-result', (event) => {
     const data = event.payload as any
-    // 更新节点延迟信息
+    // Обновление информации о задержке узла
     const nodeIndex = allNodes.value.findIndex((node) => node.name === data.name)
     if (nodeIndex !== -1) {
       allNodes.value[nodeIndex].delay = data.success ? data.delay : 0
     }
-    // 对于失败的情况，可以考虑显示错误信息
+    // В случае неудачи можно отобразить сообщение об ошибке
     if (!data.success) {
-      console.warn(`测试节点 ${data.name} 失败: ${data.error}`)
+      console.warn(`Тестирование узла ${data.name} не удалось: ${data.error}`)
     }
   })
 
   unlistenTestComplete = await listen('test-nodes-complete', () => {
     batchTesting.value = false
-    message.success('批量测速完成')
+    message.success('Тестирование всех узлов завершено')
   })
 }
 
 /**
- * 初始化并获取代理信息
+ * Инициализация и получение информации о прокси
  */
 const init = async () => {
   isLoading.value = true
   try {
-    // 使用Tauri API获取代理信息
+    // Использование Tauri API для получения информации о прокси
     const data = await tauriApi.proxy.getProxies()
     rawProxies.value = data.proxies
 
-    // 提取全局组
+    // Извлечение глобальной группы
     if (data.proxies.GLOBAL) {
       globalGroup.value = data.proxies.GLOBAL
     }
 
-    // 提取代理组
+    // Извлечение групп прокси
     const groups: ProxyData[] = []
     const nodes: NodeInfo[] = []
 
     Object.entries(data.proxies).forEach(([key, item]) => {
-      // 排除特殊组和直连
+      // Исключение специальных групп и прямого подключения
       if (key === 'GLOBAL' || key === 'direct') return
 
-      // 如果是Selector或URLTest类型，添加到代理组
+      // Если это тип Selector или URLTest, добавляем в группы прокси
       if (item.type === 'Selector' || item.type === 'URLTest') {
         groups.push(item)
 
-        // 如果还没有设置活动组，设置第一个找到的组为活动组
+        // Если еще не установлен активный вкладка группы, устанавливаем первую найденную группу как активную
         if (!activeGroupTab.value && item.type === 'Selector') {
           activeGroupTab.value = item.name
         }
       }
 
-      // 如果不是组类型，添加到节点列表
+      // Если это не тип группы, добавляем в список узлов
       if (!['Selector', 'URLTest', 'Fallback'].includes(item.type)) {
         const delay = item.history.length > 0 ? item.history[0].delay : 0
         nodes.push({
@@ -561,32 +561,32 @@ const init = async () => {
     allNodes.value = nodes
 
     if (groups.length > 0 || nodes.length > 0) {
-      message.success('代理列表加载成功')
+      message.success('Список прокси успешно загружен')
     }
   } catch (error) {
-    console.error('获取代理列表失败', error)
-    message.error('获取代理列表失败，请检查Sing-Box是否已启动')
+    console.error('Не удалось получить список прокси', error)
+    message.error('Не удалось получить список прокси, проверьте, запущен ли Sing-Box')
   } finally {
     isLoading.value = false
   }
 }
 
 /**
- * 获取节点类型
- * @param name 节点名称
- * @returns 节点类型
+ * Получение типа узла
+ * @param name Имя узла
+ * @returns Тип узла
  */
 const getProxyType = (name: string): string => {
   if (rawProxies.value[name]) {
     return rawProxies.value[name].type
   }
-  return '未知'
+  return 'Неизвестно'
 }
 
 /**
- * 获取节点类型对应的颜色
- * @param type 节点类型
- * @returns 颜色类型
+ * Получение цвета, соответствующего типу узла
+ * @param type Тип узла
+ * @returns Тип цвета
  */
 const getProxyTypeColor = (type: string): string => {
   const typeMap: Record<string, string> = {
@@ -604,9 +604,9 @@ const getProxyTypeColor = (type: string): string => {
 }
 
 /**
- * 获取节点的延迟
- * @param name 节点名称
- * @returns 延迟值（毫秒）
+ * Получение задержки узла
+ * @param name Имя узла
+ * @returns Значение задержки (миллисекунды)
  */
 const getNodeDelay = (name: string): number => {
   if (rawProxies.value[name] && rawProxies.value[name].history.length > 0) {
@@ -616,9 +616,9 @@ const getNodeDelay = (name: string): number => {
 }
 
 /**
- * 获取延迟对应的颜色类型
- * @param delay 延迟（毫秒）
- * @returns 颜色类型
+ * Получение типа цвета, соответствующего задержке
+ * @param delay Задержка (миллисекунды)
+ * @returns Тип цвета
  */
 const getNodeDelayType = (delay: number): string => {
   if (delay === 0) return 'default'
@@ -629,23 +629,23 @@ const getNodeDelayType = (delay: number): string => {
 }
 
 /**
- * 获取代理模式对应的文本
- * @param mode 代理模式
- * @returns 模式文本
+ * Получение текста, соответствующего режиму прокси
+ * @param mode Режим прокси
+ * @returns Текст режима
  */
 const getProxyModeText = (mode: string): string => {
   const modeMap: Record<string, string> = {
-    global: '全局模式',
-    rule: '规则模式',
-    tun: 'TUN模式',
+    global: 'Глобальный режим',
+    rule: 'Режим правил',
+    tun: 'TUN режим',
   }
-  return modeMap[mode] || '未知模式'
+  return modeMap[mode] || 'Неизвестный режим'
 }
 
 /**
- * 判断是否为真实节点（非组）
- * @param name 节点名称
- * @returns 是否为真实节点
+ * Проверка, является ли узел реальным (не группой)
+ * @param name Имя узла
+ * @returns Является ли узел реальным
  */
 const isRealNode = (name: string): boolean => {
   if (!rawProxies.value[name]) return false
@@ -653,9 +653,9 @@ const isRealNode = (name: string): boolean => {
 }
 
 /**
- * 测试节点延迟
- * @param name 节点名称
- * @param server 测试服务器URL
+ * Тестирование задержки узла
+ * @param name Имя узла
+ * @param server URL тестового сервера
  */
 const testNodeDelay = async (
   name: string,
@@ -663,96 +663,96 @@ const testNodeDelay = async (
 ) => {
   if (!rawProxies.value[name]) return
 
-  // 设置正在测试状态
+  // Установка состояния тестирования
   testingNodes[name] = true
 
   try {
     const data = await tauriApi.proxy.testNodeDelay(name, server)
 
-    // 更新节点的延迟信息
+    // Обновление информации о задержке узла
     const nodeIndex = allNodes.value.findIndex((node) => node.name === name)
     if (nodeIndex !== -1) {
       allNodes.value[nodeIndex].delay = data.delay
     }
 
-    message.success(`测速完成: ${data.delay}ms`)
+    message.success(`Тестирование завершено: ${data.delay}мс`)
   } catch (error) {
-    console.error('测速失败', error)
-    message.error('测速失败，可能是节点无法连接或API未响应')
+    console.error('Не удалось провести тестирование', error)
+    message.error('Не удалось провести тестирование, возможно узел не подключен или API не отвечает')
   } finally {
-    // 清除测试状态
+    // Очистка состояния тестирования
     testingNodes[name] = false
   }
 }
 
 /**
- * 批量测试所有节点
+ * Тестирование всех узлов
  */
 const batchTestAllNodes = async () => {
   if (batchTesting.value) return
 
-  // 筛选出要测试的节点
+  // Фильтрация узлов для тестирования
   const nodesToTest = allNodes.value
     .filter((node) => !['Direct', 'Reject'].includes(node.type))
     .map((node) => node.name)
 
   if (nodesToTest.length === 0) {
-    message.warning('没有可测试的节点')
+    message.warning('Нет узлов для тестирования')
     return
   }
 
-  // 重置进度
+  // Сброс прогресса
   batchTesting.value = true
   batchTestProgress.current = 0
   batchTestProgress.total = nodesToTest.length
   batchTestProgress.percentage = 0
-  batchTestProgress.text = '准备测试...'
+  batchTestProgress.text = 'Подготовка к тестированию...'
 
   try {
-    // 调用后端API进行批量测试
+    // Вызов API для проведения тестирования
     await tauriApi.proxy.batchTestNodes(nodesToTest)
   } catch (error) {
-    console.error('批量测试失败', error)
-    message.error('批量测试失败: ' + error)
+    console.error('Не удалось провести тестирование всех узлов', error)
+    message.error('Не удалось провести тестирование всех узлов: ' + error)
     batchTesting.value = false
   }
 }
 
 /**
- * 切换代理
- * @param group 代理组名称
- * @param proxy 要切换到的代理名称
+ * Переключение прокси
+ * @param group Имя группы прокси
+ * @param proxy Имя прокси для переключения
  */
 const changeProxy = async (group: string, proxy: string) => {
   try {
     await tauriApi.proxy.changeProxy(group, proxy)
-    message.success(`已切换 ${group} 到 ${proxy}`)
-    // 重新加载数据
+    message.success(`Переключено ${group} на ${proxy}`)
+    // Перезагрузка данных
     await init()
   } catch (error) {
-    console.error('切换失败', error)
-    message.error('切换失败，请检查Sing-Box是否已启动')
+    console.error('Не удалось переключить', error)
+    message.error('Не удалось переключить, проверьте, запущен ли Sing-Box')
   }
 }
 
 /**
- * 获取当前代理模式
+ * Получение текущего режима прокси
  */
 const getCurrentProxyMode = async () => {
   try {
-    // 调用后端API获取当前代理模式
+    // Вызов API для получения текущего режима прокси
     const mode = await tauriApi.proxy.getCurrentProxyMode()
     currentProxyMode.value = mode
-    console.log('当前代理模式:', mode)
+    console.log('Текущий режим прокси:', mode)
   } catch (error) {
-    console.error('获取代理模式失败', error)
-    // 出错时仍使用默认的规则模式
+    console.error('Не удалось получить режим прокси', error)
+    // В случае ошибки используем режим правил по умолчанию
     currentProxyMode.value = 'rule'
   }
 }
 
 /**
- * 处理代理模式变更
+ * Обработка изменения режима прокси
  */
 const handleProxyModeChange = (key: string) => {
   if (key === currentProxyMode.value) return
@@ -762,28 +762,28 @@ const handleProxyModeChange = (key: string) => {
 }
 
 /**
- * 确认切换代理模式
+ * Подтверждение переключения режима прокси
  */
 const confirmProxyModeChange = async () => {
   if (!targetProxyMode.value) return
 
   isChangingMode.value = true
   try {
-    // 调用后端API切换代理模式
+    // Вызов API для переключения режима прокси
     await tauriApi.proxy.toggleProxyMode(targetProxyMode.value)
 
-    // 重启内核以应用更改
+    // Перезапуск ядра для применения изменений
     await tauriApi.kernel.restartKernel()
 
-    // 更新当前模式
+    // Обновление текущего режима
     currentProxyMode.value = targetProxyMode.value
-    message.success(`已切换到${getProxyModeText(targetProxyMode.value)}并重启内核`)
+    message.success(`Переключено на ${getProxyModeText(targetProxyMode.value)} и перезапущено ядро`)
 
-    // 重新加载代理信息
+    // Перезагрузка информации о прокси
     await init()
   } catch (error) {
-    console.error('切换代理模式失败', error)
-    message.error(`切换代理模式失败: ${error}`)
+    console.error('Не удалось переключить режим прокси', error)
+    message.error(`Не удалось переключить режим прокси: ${error}`)
   } finally {
     isChangingMode.value = false
     showModeChangeModal.value = false

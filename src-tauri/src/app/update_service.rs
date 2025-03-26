@@ -5,7 +5,7 @@ use std::path::Path;
 use tauri::Emitter;
 use crate::app::constants::{api, messages};
 
-// 添加新的结构体用于版本信息
+// Добавление новой структуры для информации о версии
 #[derive(serde::Serialize)]
 pub struct UpdateInfo {
     pub latest_version: String,
@@ -13,12 +13,12 @@ pub struct UpdateInfo {
     pub has_update: bool,
 }
 
-// 检查更新
+// Проверка обновлений
 #[tauri::command]
 pub async fn check_update(current_version: String) -> Result<UpdateInfo, String> {
     let client = reqwest::Client::new();
 
-    // 获取最新版本信息
+    // Получение информации о последней версии
     let response = client
         .get(api::GITHUB_API_URL)
         .header("User-Agent", api::USER_AGENT)
@@ -31,19 +31,19 @@ pub async fn check_update(current_version: String) -> Result<UpdateInfo, String>
         .await
         .map_err(|e| format!("{}: {}", messages::ERR_GET_VERSION_FAILED, e))?;
 
-    // 获取最新版本号
+    // Получение последнего номера версии
     let tag_name = release["tag_name"]
         .as_str()
-        .ok_or_else(|| format!("{}: 无法解析版本号", messages::ERR_GET_VERSION_FAILED))
+        .ok_or_else(|| format!("{}: Не удалось разобрать номер версии", messages::ERR_GET_VERSION_FAILED))
         .map(|v| v.trim_start_matches('v').to_string())?;
     
 
-    // 获取下载链接
+    // Получение ссылки для загрузки
     let assets = release["assets"].as_array().ok_or_else(|| {
-        format!("{}: 无法获取下载资源", messages::ERR_GET_VERSION_FAILED)
+        format!("{}: Не удалось получить ресурсы для загрузки", messages::ERR_GET_VERSION_FAILED)
     })?;
 
-    // 查找Windows安装程序
+    // Поиск установщика для Windows
     let mut download_url = String::new();
     for asset in assets {
         let name = asset["name"].as_str().unwrap_or("");
@@ -57,10 +57,10 @@ pub async fn check_update(current_version: String) -> Result<UpdateInfo, String>
     }
 
     if download_url.is_empty() {
-        return Err(format!("{}: 无法获取下载链接", messages::ERR_GET_VERSION_FAILED));
+        return Err(format!("{}: Не удалось получить ссылку для загрузки", messages::ERR_GET_VERSION_FAILED));
     }
 
-    // 简单比较版本号
+    // Простое сравнение номеров версий
     let has_update = tag_name != current_version;
 
     Ok(UpdateInfo {
@@ -70,7 +70,7 @@ pub async fn check_update(current_version: String) -> Result<UpdateInfo, String>
     })
 }
 
-// 下载并安装更新
+// Загрузка и установка обновления
 #[tauri::command]
 pub async fn download_and_install_update(
     window: tauri::Window,
@@ -80,19 +80,19 @@ pub async fn download_and_install_update(
     let work_dir = get_work_dir();
     let download_path = Path::new(&work_dir).join("update.exe");
 
-    // 发送开始下载事件
+    // Отправка события начала загрузки
     let _ = window.emit(
         "update-progress",
         json!({
             "status": "downloading",
             "progress": 0,
-            "message": "开始下载更新..."
+            "message": "Начало загрузки обновления..."
         }),
     );
 
-    // 下载更新文件
+    // Загрузка файла обновления
     let window_clone = window.clone();
-    // 使用fallback下载函数
+    // Использование функции загрузки с резервным вариантом
     if let Err(e) = crate::utils::file_util::download_with_fallback(
         &download_url,
         download_path.to_str().unwrap(),
@@ -102,29 +102,29 @@ pub async fn download_and_install_update(
                 json!({
                     "status": "downloading",
                     "progress": progress,
-                    "message": format!("正在下载: {}%", progress)
+                    "message": format!("Загрузка: {}%", progress)
                 }),
             );
         },
     ).await {
-        return Err(format!("下载更新失败: {}", e));
+        return Err(format!("Не удалось загрузить обновление: {}", e));
     }
 
-    // 发送下载完成事件
+    // Отправка события завершения загрузки
     let _ = window.emit(
         "update-progress",
         json!({
             "status": "completed",
             "progress": 100,
-            "message": "下载完成，准备安装..."
+            "message": "Загрузка завершена, подготовка к установке..."
         }),
     );
 
-    // 启动安装程序
+    // Запуск установщика
     std::process::Command::new(download_path)
         .creation_flags(0x08000000)
         .spawn()
-        .map_err(|e| format!("启动安装程序失败: {}", e))?;
+        .map_err(|e| format!("Не удалось запустить установщик: {}", e))?;
 
     Ok(())
-} 
+}

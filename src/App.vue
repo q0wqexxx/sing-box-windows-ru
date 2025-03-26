@@ -22,18 +22,18 @@ import { useRouter } from 'vue-router'
 import { Window } from '@tauri-apps/api/window'
 import mitt from '@/utils/mitt'
 
-// 初始化 store
+// Инициализация store
 const appStore = useAppStore()
 const infoStore = useInfoStore()
 const trayStore = useTrayStore()
 const router = useRouter()
 
 onMounted(async () => {
-  // 设置窗口事件处理器
+  // Установка обработчиков событий окна
   // appStore.setupWindowEventHandlers(router)
 
-  // 自己实现窗口事件处理器
-  // 窗口隐藏时切换到空白页
+  // Реализация собственных обработчиков событий окна
+  // Переключение на пустую страницу при скрытии окна
   mitt.on('window-hide', () => {
     appStore.windowState.lastVisiblePath = router.currentRoute.value.path
     if (appStore.windowState.lastVisiblePath !== '/blank') {
@@ -41,21 +41,21 @@ onMounted(async () => {
     }
   })
 
-  // 窗口显示时恢复路由
+  // Восстановление маршрута при показе окна
   mitt.on('window-show', () => {
     if (router.currentRoute.value.path === '/blank' && appStore.windowState.lastVisiblePath) {
       router.push(appStore.windowState.lastVisiblePath)
     }
   })
 
-  // 窗口恢复时恢复路由
+  // Восстановление маршрута при восстановлении окна
   mitt.on('window-restore', () => {
     if (router.currentRoute.value.path === '/blank' && appStore.windowState.lastVisiblePath) {
       router.push(appStore.windowState.lastVisiblePath)
     }
   })
 
-  // 检查当前窗口状态
+  // Проверка текущего состояния окна
   const appWindow = Window.getCurrent()
   appWindow.isVisible().then((visible) => {
     appStore.windowState.isVisible = visible
@@ -68,44 +68,44 @@ onMounted(async () => {
     }
   })
 
-  // 初始化托盘图标
+  // Инициализация значка трея
   await trayStore.initTray()
 
-  // 如果不是开发环境，禁用右键菜单
+  // Если не в режиме разработки, отключить контекстное меню
   if (!import.meta.env.DEV) {
     document.oncontextmenu = () => false
   }
 
-  // 如果开启了自动启动内核
+  // Если включен автозапуск ядра
   if (appStore.autoStartKernel) {
     try {
       await infoStore.startKernel()
       appStore.setRunningState(true)
 
-      // 判断当前是否需要隐藏窗口
+      // Проверка, нужно ли скрыть окно
       const appWindow = Window.getCurrent()
       if (!(await appWindow.isVisible())) {
         appStore.saveRouteAndGoBlank(router)
       }
     } catch (error) {
-      console.error('自动启动内核失败:', error)
+      console.error('Не удалось автоматически запустить ядро:', error)
     }
   }
-  // 如果内核正在运行，初始化 WebSocket 连接
+  // Если ядро уже запущено, инициализировать WebSocket соединение
   if (appStore.isRunning) {
     infoStore.initEventListeners()
   }
 })
 
 onUnmounted(async () => {
-  // 清理事件监听
+  // Очистка обработчиков событий
   // appStore.cleanupWindowEvents()
   mitt.off('window-minimize')
   mitt.off('window-hide')
   mitt.off('window-show')
   mitt.off('window-restore')
 
-  // 销毁托盘
+  // Удаление значка трея
   await trayStore.destroyTray()
 })
 </script>
