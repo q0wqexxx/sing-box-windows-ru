@@ -1,54 +1,60 @@
 <template>
   <n-layout position="absolute">
     <n-layout-header bordered style="height: 64px; padding: 12px 24px">
-      <n-flex justify="space-between" align="center" data-tauri-drag-region>
-        <n-space align="center" :size="16">
-          <n-image
-            :src="logo"
-            width="36"
-            height="36"
-            preview-disabled
-            style="transition: all 0.3s ease"
-          />
-          <n-h2 style="margin: 0; font-weight: 600">
-            Sing-Box
-            <n-text depth="3" style="font-size: 14px; margin-left: 4px">Windows</n-text>
-          </n-h2>
-        </n-space>
-        <n-space :size="16">
-          <n-button quaternary size="medium" @click="appStore.toggleTheme" class="header-button">
-            <template #icon>
-              <n-icon>
-                <moon-outline v-if="appStore.isDark" />
-                <sunny-outline v-else />
-              </n-icon>
-            </template>
-          </n-button>
-          <n-button quaternary size="medium" @click="onToggleFullScreen" class="header-button">
-            <template #icon>
-              <n-icon>
-                <expand-outline v-if="!appStore.windowState.isFullscreen" />
-                <contract-outline v-else />
-              </n-icon>
-            </template>
-          </n-button>
-          <n-button quaternary size="medium" @click="appStore.minimizeWindow" class="header-button">
-            <template #icon>
-              <n-icon>
-                <remove-outline />
-              </n-icon>
-            </template>
-          </n-button>
-          <n-button quaternary size="medium" @click="appStore.hideWindow" class="header-button">
-            <template #icon>
-              <n-icon>
-                <close-outline />
-              </n-icon>
-            </template>
-          </n-button>
-        </n-space>
-      </n-flex>
-    </n-layout-header>
+  <n-flex justify="space-between" align="center" data-tauri-drag-region>
+    <!-- Левая часть: логотип и название -->
+    <n-space align="center" :size="16">
+      <n-image
+        :src="logo"
+        width="36"
+        height="36"
+        preview-disabled
+        style="transition: all 0.3s ease"
+      />
+      <n-h2 style="margin: 0; font-weight: 600">
+        Sing-Box
+        <n-text depth="3" style="font-size: 14px; margin-left: 4px">Windows</n-text>
+      </n-h2>
+    </n-space>
+
+    <!-- Добавляем переключатель языков -->
+    <LanguageSwitcher />
+
+    <!-- Правая часть: кнопки управления (темы, полноэкранный режим и т.д.) -->
+    <n-space :size="16">
+      <n-button quaternary size="medium" @click="appStore.toggleTheme" class="header-button">
+        <template #icon>
+          <n-icon>
+            <moon-outline v-if="appStore.isDark" />
+            <sunny-outline v-else />
+          </n-icon>
+        </template>
+      </n-button>
+      <n-button quaternary size="medium" @click="onToggleFullScreen" class="header-button">
+        <template #icon>
+          <n-icon>
+            <expand-outline v-if="!appStore.windowState.isFullscreen" />
+            <contract-outline v-else />
+          </n-icon>
+        </template>
+      </n-button>
+      <n-button quaternary size="medium" @click="appStore.minimizeWindow" class="header-button">
+        <template #icon>
+          <n-icon>
+            <remove-outline />
+          </n-icon>
+        </template>
+      </n-button>
+      <n-button quaternary size="medium" @click="appStore.hideWindow" class="header-button">
+        <template #icon>
+          <n-icon>
+            <close-outline />
+          </n-icon>
+        </template>
+      </n-button>
+    </n-space>
+  </n-flex>
+</n-layout-header>
     <n-layout has-sider position="absolute" style="top: 64px">
       <n-layout-sider
         bordered
@@ -102,6 +108,7 @@
 </template>
 
 <script setup lang="ts">
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import { darkTheme, useOsTheme, NIcon, useNotification, NButton, NProgress } from 'naive-ui'
 import type { NotificationReactive } from 'naive-ui'
 import { h, ref, onMounted, computed } from 'vue'
