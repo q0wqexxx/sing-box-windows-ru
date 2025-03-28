@@ -154,13 +154,13 @@ const fetchRules = async () => {
     console.log('规则数据:', response)
     if (response && response.rules) {
       rules.value = response.rules
-      message.success(t('rules.fetch_success', { count: rules.value.length }))
+      message.success(`成功获取 ${rules.value.length} 条规则`)
     } else {
-      message.error(t('rules.fetch_error_format'))
+      message.error('获取规则失败：返回数据格式错误')
     }
   } catch (error) {
     console.error('获取规则失败:', error)
-    // message.error(t('rules.fetch_error', { error: error.toString() }))
+    message.error(`获取规则失败: ${error}`)
   } finally {
     loading.value = false
   }
