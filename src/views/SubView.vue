@@ -233,7 +233,7 @@
       label-width="80"
       require-mark-placement="right-hanging"
     >
-      <n-form-item label="{{ t('sub.name') }}" path="name">
+      <n-form-item :label="t('sub.name')" path="name">
         <n-input
           v-model:value="formValue.name"
           :placeholder="t('sub.enter_subscription_name')"
@@ -244,7 +244,7 @@
 
       <n-tabs type="line" animated v-model:value="activeTab" class="sub-tabs">
         <n-tab-pane name="url" :tab="t('sub.url_add')">
-          <n-form-item label="{{ t('sub.link') }}" path="url">
+          <n-form-item :label="t('sub.link')" path="url">
             <n-input
               v-model:value="formValue.url"
               type="textarea"
@@ -255,7 +255,7 @@
           </n-form-item>
         </n-tab-pane>
         <n-tab-pane name="manual" :tab="t('sub.manual_edit')">
-          <n-form-item label="{{ t('sub.content') }}" path="manualContent">
+          <n-form-item :label="t('sub.content')" path="manualContent">
             <n-input
               v-model:value="formValue.manualContent"
               type="textarea"

@@ -166,7 +166,9 @@
         "positive_text": "我知道了",
         "manual_install_success": "内核安装验证成功！",
         "manual_install_fail": "未检测到有效的内核文件",
-        "manual_install_check_fail": "检查失败: {error}"
+        "manual_install_check_fail": "检查失败: {error}",
+        "switch_on": "开启",
+        "switch_off": "关闭"
       },
       "sub": {
         "subscription_management": "订阅管理",
@@ -203,7 +205,51 @@
         "subscription_use_fail": "订阅使用失败：{error}",
         "read_config_fail": "读取配置失败：{error}",
         "config_save_success": "配置已保存并应用",
-        "config_save_fail": "保存配置失败：{error}"
-      }
+        "config_save_fail": "保存配置失败：{error}",
+        "save_and_apply": "保存并应用"
+      },
+      "menu": {
+        "home": "主页",
+        "proxy": "代理",
+        "subscription": "订阅",
+        "rules": "规则",
+        "connections": "连接",
+        "log": "日志",
+        "settings": "设置"
+      },
+      "update": {
+        "modal_title": "发现新版本",
+        "new_version_released": "新版本 {version} 已发布",
+        "prompt_update": "是否立即更新？",
+        "current_version": "当前版本：{version}",
+        "later": "下次再说",
+        "downloading": "正在下载更新",
+        "update_now": "立即更新",
+        "download_complete_install": "更新下载完成，即将安装...",
+        "update_fail": "更新失败: {error}",
+        "progress_listener_fail": "设置更新进度监听失败"
+      },
+      "tray": {
+        "tooltip_base": "Sing-Box for Windows - 内核{status}, {mode}",
+        "tooltip_with_config": "Sing-Box for Windows - 内核{status}, {mode}, 配置: {config}",
+        "menu": {
+            "show_window": "显示界面",
+            "start_kernel": "启动内核",
+            "stop_kernel": "停止内核",
+            "restart_kernel": "重启内核",
+            "kernel_control": "内核控制",
+            "proxy_mode": "代理模式",
+            "current_mode": "当前模式: {mode}",
+            "system_proxy": "系统代理模式",
+            "tun_mode": "TUN 模式",
+            "quit": "退出"
+        }
+        },
+        "proxy_names": {
+            "direct": "本地直连",
+            "manual": "手动切换",
+            "auto": "自动选择"
+          }
+
   }
   

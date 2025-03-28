@@ -5,13 +5,14 @@
         <option value="ru">Русский</option>
         <option value="en">English</option>
       </select>
+      
     </div>
   </template>
   
   <script setup lang="ts">
   import { ref, watch } from 'vue'
   import { useI18n } from 'vue-i18n'
-  
+  import { GlobeOutline } from '@vicons/ionicons5'
   const { locale } = useI18n({ useScope: 'global' })
   const currentLocale = ref(locale.value)
   

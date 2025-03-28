@@ -117,13 +117,13 @@ const columns: DataTableColumns<Rule> = [
       let color: 'default' | 'error' | 'primary' | 'success' | 'info' | 'warning' = 'default'
       if (proxyName === 'reject') {
         color = 'error'
-      } else if (proxyName === '本地直连') {
+      } else if (proxyName === t('rules.proxy_names.direct')) {
         color = 'success'
       } else if (proxyName === 'hijack-dns' || proxyName === 'sniff') {
         color = 'info'
       } else if (proxyName.includes('Google') || proxyName.includes('YouTube')) {
         color = 'warning'
-      } else if (proxyName.includes('手动切换') || proxyName.includes('自动选择')) {
+      } else if (proxyName.includes(t('rules.proxy_names.manual')) || proxyName.includes(t('rules.proxy_names.auto'))) {
         color = 'primary'
       }
       return h(

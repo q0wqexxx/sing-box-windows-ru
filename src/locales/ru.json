@@ -117,7 +117,12 @@
           "type": "Тип",
           "payload": "Содержимое правила",
           "proxy": "Целевой прокси"
-        }
+        },
+        "proxy_names": {
+            "direct": "Прямое подключение",
+            "manual": "Ручное переключение",
+            "auto": "Автоматический выбор"
+          }
       },
       "settings": {
         "kernel_management": "Управление ядром",
@@ -166,7 +171,9 @@
         "positive_text": "Я понял",
         "manual_install_success": "Проверка установки ядра прошла успешно!",
         "manual_install_fail": "Действительное ядро не обнаружено",
-        "manual_install_check_fail": "Ошибка проверки: {error}"
+        "manual_install_check_fail": "Ошибка проверки: {error}",
+        "switch_on": "Включено",
+        "switch_off": "Выключено"
       },
       "sub": {
         "subscription_management": "Управление подписками",
@@ -203,7 +210,46 @@
         "subscription_use_fail": "Ошибка применения подписки: {error}",
         "read_config_fail": "Ошибка чтения конфигурации: {error}",
         "config_save_success": "Конфигурация сохранена и применена",
-        "config_save_fail": "Ошибка сохранения конфигурации: {error}"
-      }
+        "config_save_fail": "Ошибка сохранения конфигурации: {error}",
+        "save_and_apply": "Сохранить и применить"
+      },
+      "menu": {
+        "home": "Главная",
+        "proxy": "Прокси",
+        "subscription": "Подписки",
+        "rules": "Правила",
+        "connections": "Подключения",
+        "log": "Логи",
+        "settings": "Настройки"
+      },
+      "update": {
+        "modal_title": "Обнаружена новая версия",
+        "new_version_released": "Новая версия {version} выпущена",
+        "prompt_update": "Обновить сейчас?",
+        "current_version": "Текущая версия: {version}",
+        "later": "Может быть позже",
+        "downloading": "Загрузка обновления...",
+        "update_now": "Обновить сейчас",
+        "download_complete_install": "Загрузка обновления завершена, установка начинается...",
+        "update_fail": "Ошибка обновления: {error}",
+        "progress_listener_fail": "Не удалось установить прослушиватель прогресса обновления"
+      },
+      "tray": {
+        "tooltip_base": "Sing-Box для Windows - Ядро {status}, {mode}",
+        "tooltip_with_config": "Sing-Box для Windows - Ядро {status}, {mode}, Конфигурация: {config}",
+        "menu": {
+            "show_window": "Показать окно",
+            "start_kernel": "Запустить ядро",
+            "stop_kernel": "Остановить ядро",
+            "restart_kernel": "Перезапустить ядро",
+            "kernel_control": "Управление ядром",
+            "proxy_mode": "Режим прокси",
+            "current_mode": "Текущий режим: {mode}",
+            "system_proxy": "Режим системного прокси",
+            "tun_mode": "Режим TUN",
+            "quit": "Выход"
+        }
+        }
+
   }
   

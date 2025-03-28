@@ -117,7 +117,12 @@
           "type": "Type",
           "payload": "Rule Content",
           "proxy": "Target Proxy"
-        }
+        },
+        "proxy_names": {
+        "direct": "Direct Connection",
+        "manual": "Manual Switch",
+        "auto": "Auto Select"
+  }
       },
       "settings": {
         "kernel_management": "Kernel Management",
@@ -166,7 +171,9 @@
         "positive_text": "Got it",
         "manual_install_success": "Kernel installation verified successfully!",
         "manual_install_fail": "No valid kernel file detected",
-        "manual_install_check_fail": "Check failed: {error}"
+        "manual_install_check_fail": "Check failed: {error}",
+        "switch_on": "Enabled",
+        "switch_off": "Disabled"
       },
       "sub": {
         "subscription_management": "Subscription Management",
@@ -203,7 +210,45 @@
         "subscription_use_fail": "Failed to apply subscription: {error}",
         "read_config_fail": "Failed to read config: {error}",
         "config_save_success": "Configuration saved and applied",
-        "config_save_fail": "Failed to save configuration: {error}"
-      }
+        "config_save_fail": "Failed to save configuration: {error}",
+        "save_and_apply": "Save and Apply"
+      },
+      "menu": {
+        "home": "Home",
+        "proxy": "Proxy",
+        "subscription": "Subscription",
+        "rules": "Rules",
+        "connections": "Connections",
+        "log": "Log",
+        "settings": "Settings"
+      },
+      "update": {
+        "modal_title": "New Version Found",
+        "new_version_released": "New version {version} released",
+        "prompt_update": "Would you like to update now?",
+        "current_version": "Current version: {version}",
+        "later": "Maybe later",
+        "downloading": "Downloading update...",
+        "update_now": "Update Now",
+        "download_complete_install": "Update download complete, installing soon...",
+        "update_fail": "Update failed: {error}",
+        "progress_listener_fail": "Failed to set update progress listener"
+      },
+      "tray": {
+        "tooltip_base": "Sing-Box for Windows - Kernel {status}, {mode}",
+        "tooltip_with_config": "Sing-Box for Windows - Kernel {status}, {mode}, Config: {config}",
+        "menu": {
+            "show_window": "Show Window",
+            "start_kernel": "Start Kernel",
+            "stop_kernel": "Stop Kernel",
+            "restart_kernel": "Restart Kernel",
+            "kernel_control": "Kernel Control",
+            "proxy_mode": "Proxy Mode",
+            "current_mode": "Current Mode: {mode}",
+            "system_proxy": "System Proxy Mode",
+            "tun_mode": "TUN Mode",
+            "quit": "Quit"
+        }
+        }
   }
   
