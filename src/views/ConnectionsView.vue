@@ -284,11 +284,12 @@ const pagination = {
 const refreshConnections = async () => {
   loading.value = true
   try {
-    // Здесь можно добавить дополнительные действия при обновлении
-    message.success(t('connections.refresh_success'))
+    // 这里实际上不需要做什么，因为infoStore中的connections已经通过WebSocket自动更新
+    // 但我们仍然提供刷新按钮以便于用户手动刷新界面
+    message.success('连接列表已刷新')
   } catch (error) {
-    console.error(t('connections.refresh_failed'), error)
-    message.error(t('connections.refresh_failed', { error: error.toString() }))
+    console.error('刷新连接列表失败:', error)
+    message.error(`刷新连接列表失败: ${error}`)
   } finally {
     loading.value = false
   }

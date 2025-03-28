@@ -129,21 +129,32 @@ import { TrashOutline, CopyOutline, DownloadOutline, DocumentTextOutline } from 
 import type { VirtualListInst } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 
+interface Log {
+  type: string
+  payload: string
+  timestamp: number
+}
+
+interface FormattedLog extends Log {
+  key: string
+}
+
+
 const { t } = useI18n()
 const message = useMessage()
 const infoStore = useInfoStore()
 const virtualListRef = ref<VirtualListInst | null>(null)
 const autoScroll = ref(true)
 const filterType = ref<string | null>(null)
-const displayedLogs = ref([])
+  const displayedLogs = ref<Log[]>([])
 
-// Форматирование логов для виртуального списка (добавление уникального key)
-const formattedLogs = computed(() =>
-  displayedLogs.value.map((log, index) => ({
+// 格式化日志数据，添加key属性以适配虚拟列表
+const formattedLogs = computed<FormattedLog[]>(() => {
+  return displayedLogs.value.map((log, index) => ({
     ...log,
     key: `${log.timestamp}-${index}`,
-  })),
-)
+  }))
+})
 
 // Обработка события прокрутки виртуального списка
 const handleVirtualScroll = (e: Event) => {

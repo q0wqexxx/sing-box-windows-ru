@@ -203,6 +203,34 @@ import { tauriApi } from '@/services/tauri-api'
 import { listen } from '@tauri-apps/api/event'
 import { useI18n } from 'vue-i18n'
 
+// 接口定义
+interface ProxyHistory {
+  time: string
+  delay: number
+}
+
+interface ProxyData {
+  type: string
+  name: string
+  now: string
+  all: string[]
+  history: ProxyHistory[]
+  udp: boolean
+}
+
+interface Proxies {
+  proxies: Record<string, ProxyData>
+}
+
+// 添加类型定义
+interface TestGroupResult {
+  group: string
+  results: Record<string, number>
+  success: boolean
+  error?: string
+}
+
+// 状态定义
 const { t } = useI18n()
 const message = useMessage()
 const isLoading = ref(false)
@@ -408,18 +436,20 @@ const handleProxyModeChange = (key: string) => {
 /**
  * Подтверждение смены режима прокси
  */
-const confirmProxyModeChange = async () => {
+ const confirmProxyModeChange = async () => {
   if (!targetProxyMode.value) return
+
   isChangingMode.value = true
   try {
     await tauriApi.proxy.toggleProxyMode(targetProxyMode.value)
     await tauriApi.kernel.restartKernel()
     currentProxyMode.value = targetProxyMode.value
-    message.success(t('proxy.changed_mode', { mode: getProxyModeText(targetProxyMode.value) }))
+    message.success(`已切换到${getProxyModeText(targetProxyMode.value)}并重启内核`)
+    // 重新加载数据
     await init()
   } catch (error) {
     console.error('切换代理模式失败', error)
-    message.error(t('proxy.change_mode_error', { error: error.toString() }))
+    message.error(`切换代理模式失败: ${error}`)
   } finally {
     isChangingMode.value = false
     showModeChangeModal.value = false

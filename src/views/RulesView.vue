@@ -160,7 +160,7 @@ const fetchRules = async () => {
     }
   } catch (error) {
     console.error('获取规则失败:', error)
-    message.error(t('rules.fetch_error', { error: error.toString() }))
+    // message.error(t('rules.fetch_error', { error: error.toString() }))
   } finally {
     loading.value = false
   }
